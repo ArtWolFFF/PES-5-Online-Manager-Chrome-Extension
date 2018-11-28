@@ -1,6 +1,15 @@
 let player = {
 	skills: {}
 };
+
+let condition = {
+	abysmal: -2,
+	bad: -1,
+	normal: 0,
+	good: 1,
+	top: 2
+};
+let validConditions = [condition.abysmal, condition.bad, condition.normal, condition.good, condition.top];
 let skillsContainer = document.querySelectorAll("#myform table #info b span");
 
 function getFirstSkillIndex() {
@@ -9,6 +18,43 @@ function getFirstSkillIndex() {
 	for (let span of skillsContainer) {
 		let prevSibling = span.parentElement.previousSibling;
 		if (prevSibling != null && prevSibling.textContent.indexOf(firstSkill) > -1) {
+			/* found first skill name text element */
+			prevSibling = prevSibling.previousSibling;
+			let br = document.createElement("br");
+			let conditionSelector = document.createElement("select");
+			let abysmalOption = document.createElement("option");
+			abysmalOption.value = condition.abysmal;
+			abysmalOption.innerText = "Purple ↓";
+			let badOption = document.createElement("option");
+			badOption.value = condition.bad;
+			badOption.innerText = "Blue";
+			let normalOption = document.createElement("option");
+			normalOption.value = condition.normal;
+			normalOption.innerText = "Green →";
+			normalOption.selected = "selected";
+			let goodOption = document.createElement("option");
+			goodOption.value = condition.good;
+			goodOption.innerText = "Yellow";
+			let topOption = document.createElement("option");
+			topOption.value = condition.top;
+			topOption.innerText = "Red ↑";
+			conditionSelector.appendChild(topOption);
+			conditionSelector.appendChild(goodOption);
+			conditionSelector.appendChild(normalOption);
+			conditionSelector.appendChild(badOption);
+			conditionSelector.appendChild(abysmalOption);
+			let selectorText = document.createElement("span");
+			selectorText.innerText = "Condition: ";
+			
+			prevSibling.parentElement.insertBefore(br, prevSibling);
+			prevSibling.parentElement.insertBefore(conditionSelector, prevSibling);			
+			prevSibling.parentElement.insertBefore(selectorText, conditionSelector);
+			prevSibling.parentElement.insertBefore(br, conditionSelector);
+			prevSibling.parentElement.insertBefore(br, prevSibling);
+			
+			conditionSelector.onchange = function(e) {
+				applyCondition(parseInt(e.target.value));
+			}
 			break;
 		}
 		i++;
@@ -44,14 +90,6 @@ player.skills.Mentality = parseInt(skillsContainer[startIdx + 23].innerHTML);
 player.skills.KeeperSkills = parseInt(skillsContainer[startIdx + 24].innerHTML);
 player.skills.Teamwork = parseInt(skillsContainer[startIdx + 25].innerHTML);
 
-let condition = {
-	abysmal: -2,
-	bad: -1,
-	normal: 0,
-	good: 1,
-	top: 2
-};
-let validConditions = [condition.abysmal, condition.bad, condition.normal, condition.good, condition.top];
 
 function getSkillsByCondition(condition) {
 	if (validConditions.indexOf(condition) === -1) {
@@ -144,7 +182,6 @@ function getModifiersForSkill(skillName) {
 
 function updateColors() {
 	for (let i = startIdx; i < skillsContainer.length; i++) {
-	//for (let span of skillsContainer) {
 		let span = skillsContainer[i];
 		let value = parseInt(span.innerHTML);
 		let color = "#FFFFFF";
