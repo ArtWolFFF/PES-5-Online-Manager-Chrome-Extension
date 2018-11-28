@@ -1,3 +1,5 @@
+(function() { 
+
 let player = {
 	skills: {}
 };
@@ -12,7 +14,7 @@ let condition = {
 let validConditions = [condition.abysmal, condition.bad, condition.normal, condition.good, condition.top];
 let skillsContainer = document.querySelectorAll("#myform table #info b span");
 
-function getFirstSkillIndex() {
+function initialize() {
 	let firstSkill = "Attack";
 	let i = 0;
 	for (let span of skillsContainer) {
@@ -24,20 +26,29 @@ function getFirstSkillIndex() {
 			let conditionSelector = document.createElement("select");
 			let abysmalOption = document.createElement("option");
 			abysmalOption.value = condition.abysmal;
-			abysmalOption.innerText = "Purple ↓";
+			abysmalOption.innerText = "Abysmal ↓";			
+			abysmalOption.style.color = "purple";
+			abysmalOption.style.fontWeight = "bold";
 			let badOption = document.createElement("option");
 			badOption.value = condition.bad;
-			badOption.innerText = "Blue";
+			badOption.innerText = "Poor";
+			badOption.style.color = "blue";
 			let normalOption = document.createElement("option");
 			normalOption.value = condition.normal;
-			normalOption.innerText = "Green →";
+			normalOption.innerText = "Normal →";
 			normalOption.selected = "selected";
+			normalOption.style.color = "green";
+			normalOption.style.fontWeight = "bold";
 			let goodOption = document.createElement("option");
 			goodOption.value = condition.good;
-			goodOption.innerText = "Yellow";
+			goodOption.innerText = "Good";
+			goodOption.style.color = "Orange";
+			goodOption.style.fontWeight = "bold";
 			let topOption = document.createElement("option");
 			topOption.value = condition.top;
-			topOption.innerText = "Red ↑";
+			topOption.innerText = "Top ↑";
+			topOption.style.color = "red";
+			topOption.style.fontWeight = "bold";
 			conditionSelector.appendChild(topOption);
 			conditionSelector.appendChild(goodOption);
 			conditionSelector.appendChild(normalOption);
@@ -54,7 +65,7 @@ function getFirstSkillIndex() {
 			
 			conditionSelector.onchange = function(e) {
 				applyCondition(parseInt(e.target.value));
-			}
+			};
 			break;
 		}
 		i++;
@@ -62,7 +73,7 @@ function getFirstSkillIndex() {
 	return i;
 }
 
-let startIdx = getFirstSkillIndex();
+let startIdx = initialize();
 player.skills.Attack = parseInt(skillsContainer[startIdx].innerHTML);
 player.skills.Defence = parseInt(skillsContainer[startIdx + 1].innerHTML);
 player.skills.Balance = parseInt(skillsContainer[startIdx + 2].innerHTML);
@@ -99,7 +110,7 @@ function getSkillsByCondition(condition) {
 	var actualSkills = {};
 	for (let skillName in player.skills) {
 		let modifiers = getModifiersForSkill(skillName);
-		let calculatedValue = Math.floor(player.skills[skillName] * modifiers[condition])
+		let calculatedValue = Math.floor(player.skills[skillName] * modifiers[condition]);
 		actualSkills[skillName] = Math.min(calculatedValue, 99);
 	}
 	return actualSkills;
@@ -228,3 +239,5 @@ function applyCondition(condition) {
 	skillsContainer[startIdx + 25].innerHTML = modifiedSkills.Teamwork;	
 	updateColors();
 }
+
+})();
