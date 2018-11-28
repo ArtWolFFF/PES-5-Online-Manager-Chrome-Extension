@@ -3,33 +3,46 @@ let player = {
 };
 let skillsContainer = document.querySelectorAll("#myform table #info b span");
 
-// TODO indexing changes if there are several positions specified
-player.skills.Attack = parseInt(skillsContainer[3].innerHTML);
-player.skills.Defence = parseInt(skillsContainer[4].innerHTML);
-player.skills.Balance = parseInt(skillsContainer[5].innerHTML);
-player.skills.Stamina = parseInt(skillsContainer[6].innerHTML);
-player.skills.TopSpeed = parseInt(skillsContainer[7].innerHTML);
-player.skills.Acceleration = parseInt(skillsContainer[8].innerHTML);
-player.skills.Response = parseInt(skillsContainer[9].innerHTML);
-player.skills.Agility = parseInt(skillsContainer[10].innerHTML);
-player.skills.DribbleAccuracy = parseInt(skillsContainer[11].innerHTML);
-player.skills.DribbleSpeed = parseInt(skillsContainer[12].innerHTML);
-player.skills.ShortPassAccuracy = parseInt(skillsContainer[13].innerHTML);
-player.skills.ShortPassSpeed = parseInt(skillsContainer[14].innerHTML);
-player.skills.LongPassAccuracy = parseInt(skillsContainer[15].innerHTML);
-player.skills.LongPassSpeed = parseInt(skillsContainer[16].innerHTML);
-player.skills.ShotAccuracy = parseInt(skillsContainer[17].innerHTML);
-player.skills.ShotPower = parseInt(skillsContainer[18].innerHTML);
-player.skills.ShotTechnique = parseInt(skillsContainer[19].innerHTML);
-player.skills.FreeKickAccuracy = parseInt(skillsContainer[20].innerHTML);
-player.skills.Curling = parseInt(skillsContainer[21].innerHTML);
-player.skills.Header = parseInt(skillsContainer[22].innerHTML);
-player.skills.Jump = parseInt(skillsContainer[23].innerHTML);
-player.skills.Technique = parseInt(skillsContainer[24].innerHTML);
-player.skills.Aggression = parseInt(skillsContainer[25].innerHTML);
-player.skills.Mentality = parseInt(skillsContainer[26].innerHTML);
-player.skills.KeeperSkills = parseInt(skillsContainer[27].innerHTML);
-player.skills.Teamwork = parseInt(skillsContainer[28].innerHTML);
+function getFirstSkillIndex() {
+	let firstSkill = "Attack";
+	let i = 0;
+	for (let span of skillsContainer) {
+		let prevSibling = span.parentElement.previousSibling;
+		if (prevSibling != null && prevSibling.textContent.indexOf(firstSkill) > -1) {
+			break;
+		}
+		i++;
+	}
+	return i;
+}
+
+let startIdx = getFirstSkillIndex();
+player.skills.Attack = parseInt(skillsContainer[startIdx].innerHTML);
+player.skills.Defence = parseInt(skillsContainer[startIdx + 1].innerHTML);
+player.skills.Balance = parseInt(skillsContainer[startIdx + 2].innerHTML);
+player.skills.Stamina = parseInt(skillsContainer[startIdx + 3].innerHTML);
+player.skills.TopSpeed = parseInt(skillsContainer[startIdx + 4].innerHTML);
+player.skills.Acceleration = parseInt(skillsContainer[startIdx + 5].innerHTML);
+player.skills.Response = parseInt(skillsContainer[startIdx + 6].innerHTML);
+player.skills.Agility = parseInt(skillsContainer[startIdx + 7].innerHTML);
+player.skills.DribbleAccuracy = parseInt(skillsContainer[startIdx + 8].innerHTML);
+player.skills.DribbleSpeed = parseInt(skillsContainer[startIdx + 9].innerHTML);
+player.skills.ShortPassAccuracy = parseInt(skillsContainer[startIdx + 10].innerHTML);
+player.skills.ShortPassSpeed = parseInt(skillsContainer[startIdx + 11].innerHTML);
+player.skills.LongPassAccuracy = parseInt(skillsContainer[startIdx + 12].innerHTML);
+player.skills.LongPassSpeed = parseInt(skillsContainer[startIdx + 13].innerHTML);
+player.skills.ShotAccuracy = parseInt(skillsContainer[startIdx + 14].innerHTML);
+player.skills.ShotPower = parseInt(skillsContainer[startIdx + 15].innerHTML);
+player.skills.ShotTechnique = parseInt(skillsContainer[startIdx + 16].innerHTML);
+player.skills.FreeKickAccuracy = parseInt(skillsContainer[startIdx + 17].innerHTML);
+player.skills.Curling = parseInt(skillsContainer[startIdx + 18].innerHTML);
+player.skills.Header = parseInt(skillsContainer[startIdx + 19].innerHTML);
+player.skills.Jump = parseInt(skillsContainer[startIdx + 20].innerHTML);
+player.skills.Technique = parseInt(skillsContainer[startIdx + 21].innerHTML);
+player.skills.Aggression = parseInt(skillsContainer[startIdx + 22].innerHTML);
+player.skills.Mentality = parseInt(skillsContainer[startIdx + 23].innerHTML);
+player.skills.KeeperSkills = parseInt(skillsContainer[startIdx + 24].innerHTML);
+player.skills.Teamwork = parseInt(skillsContainer[startIdx + 25].innerHTML);
 
 let condition = {
 	abysmal: -2,
@@ -130,7 +143,9 @@ function getModifiersForSkill(skillName) {
 }
 
 function updateColors() {
-	for (let span of skillsContainer) {
+	for (let i = startIdx; i < skillsContainer.length; i++) {
+	//for (let span of skillsContainer) {
+		let span = skillsContainer[i];
 		let value = parseInt(span.innerHTML);
 		let color = "#FFFFFF";
 		if (value >= 95) {
@@ -148,31 +163,31 @@ function updateColors() {
 
 function applyCondition(condition) {
 	let modifiedSkills = getSkillsByCondition(condition);
-	skillsContainer[3].innerHTML = modifiedSkills.Attack;	
-	skillsContainer[4].innerHTML = modifiedSkills.Defence;
-	skillsContainer[5].innerHTML = modifiedSkills.Balance;
-	skillsContainer[6].innerHTML = modifiedSkills.Stamina;
-	skillsContainer[7].innerHTML = modifiedSkills.TopSpeed;
-	skillsContainer[8].innerHTML = modifiedSkills.Acceleration;
-	skillsContainer[9].innerHTML = modifiedSkills.Response;
-	skillsContainer[10].innerHTML = modifiedSkills.Agility;
-	skillsContainer[11].innerHTML = modifiedSkills.DribbleAccuracy;
-	skillsContainer[12].innerHTML = modifiedSkills.DribbleSpeed;
-	skillsContainer[13].innerHTML = modifiedSkills.ShortPassAccuracy;
-	skillsContainer[14].innerHTML = modifiedSkills.ShortPassSpeed;
-	skillsContainer[15].innerHTML = modifiedSkills.LongPassAccuracy;
-	skillsContainer[16].innerHTML = modifiedSkills.LongPassSpeed;
-	skillsContainer[17].innerHTML = modifiedSkills.ShotAccuracy;
-	skillsContainer[18].innerHTML = modifiedSkills.ShotPower;
-	skillsContainer[19].innerHTML = modifiedSkills.ShotTechnique;
-	skillsContainer[20].innerHTML = modifiedSkills.FreeKickAccuracy;
-	skillsContainer[21].innerHTML = modifiedSkills.Curling;
-	skillsContainer[22].innerHTML = modifiedSkills.Header;
-	skillsContainer[23].innerHTML = modifiedSkills.Jump;
-	skillsContainer[24].innerHTML = modifiedSkills.Technique;
-	skillsContainer[25].innerHTML = modifiedSkills.Aggression;
-	skillsContainer[26].innerHTML = modifiedSkills.Mentality;
-	skillsContainer[27].innerHTML = modifiedSkills.KeeperSkills;
-	skillsContainer[28].innerHTML = modifiedSkills.Teamwork;	
+	skillsContainer[startIdx].innerHTML = modifiedSkills.Attack;	
+	skillsContainer[startIdx + 1].innerHTML = modifiedSkills.Defence;
+	skillsContainer[startIdx + 2].innerHTML = modifiedSkills.Balance;
+	skillsContainer[startIdx + 3].innerHTML = modifiedSkills.Stamina;
+	skillsContainer[startIdx + 4].innerHTML = modifiedSkills.TopSpeed;
+	skillsContainer[startIdx + 5].innerHTML = modifiedSkills.Acceleration;
+	skillsContainer[startIdx + 6].innerHTML = modifiedSkills.Response;
+	skillsContainer[startIdx + 7].innerHTML = modifiedSkills.Agility;
+	skillsContainer[startIdx + 8].innerHTML = modifiedSkills.DribbleAccuracy;
+	skillsContainer[startIdx + 9].innerHTML = modifiedSkills.DribbleSpeed;
+	skillsContainer[startIdx + 10].innerHTML = modifiedSkills.ShortPassAccuracy;
+	skillsContainer[startIdx + 11].innerHTML = modifiedSkills.ShortPassSpeed;
+	skillsContainer[startIdx + 12].innerHTML = modifiedSkills.LongPassAccuracy;
+	skillsContainer[startIdx + 13].innerHTML = modifiedSkills.LongPassSpeed;
+	skillsContainer[startIdx + 14].innerHTML = modifiedSkills.ShotAccuracy;
+	skillsContainer[startIdx + 15].innerHTML = modifiedSkills.ShotPower;
+	skillsContainer[startIdx + 16].innerHTML = modifiedSkills.ShotTechnique;
+	skillsContainer[startIdx + 17].innerHTML = modifiedSkills.FreeKickAccuracy;
+	skillsContainer[startIdx + 18].innerHTML = modifiedSkills.Curling;
+	skillsContainer[startIdx + 19].innerHTML = modifiedSkills.Header;
+	skillsContainer[startIdx + 20].innerHTML = modifiedSkills.Jump;
+	skillsContainer[startIdx + 21].innerHTML = modifiedSkills.Technique;
+	skillsContainer[startIdx + 22].innerHTML = modifiedSkills.Aggression;
+	skillsContainer[startIdx + 23].innerHTML = modifiedSkills.Mentality;
+	skillsContainer[startIdx + 24].innerHTML = modifiedSkills.KeeperSkills;
+	skillsContainer[startIdx + 25].innerHTML = modifiedSkills.Teamwork;	
 	updateColors();
 }
