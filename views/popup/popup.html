@@ -1,15 +1,257 @@
-  <!DOCTYPE html>
+﻿  <!DOCTYPE html>
   <html>
     <head>
+      <meta charset="UTF-8">
       <style>
-        button {
-          height: 30px;
-          width: 30px;
-          outline: none;
-        }
+		body {
+			max-width: 1000px;
+			font-size: 14px;
+			/* font-family: "Arabic Typesetting"; */
+		}
+		
+		
+		button {
+			width: 80px;
+			height: 20px;
+			font-size: 12px;
+		}
+	  
+		section {
+			display: block;
+			width: 250px;
+			position: relative;
+			text-align: center;
+			margin: 0 auto;		
+			padding-top: 5px;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #ccc;
+			clear: both;
+		}
+				
+		.club-information-container span {
+			display: block;
+		}
+		
+		.club-name-container {
+			position: relative;
+			display: inline-block;
+			margin: 0 auto;
+			vertical-align: top;
+		}
+		
+		.club-position-container {
+			position: relative;
+			display: inline-block;
+			margin: 0 auto;
+			vertical-align: top;
+		}
+		
+		/* .nearest-fixtures-container {
+					position: relative;
+			float: left;
+			margin: 0 auto;
+		} */
+		
+		.club-name-container {
+			width: 140px;
+		}		
+		
+		.club-position-container {
+			width: 100px;
+		}
+		
+		.club-position {
+			display: block;
+			text-align: center;
+			vertical-align: middle;
+			font-size: 40px;
+			color: green;
+			margin-top: 20px;
+		}
+		
+		.links-list, .links-list-item {
+			display: block;
+		}
+		
+		.nearest-fixtures-container, .league-snippet-container, .links-container {
+			clear: both;
+		}
+		
+		.unobtrusive-header {
+			position: relative;
+			text-align: center;
+			margin: 0 auto;
+			font-size: 12px;
+			opacity: 0.5;
+		}
+		
+		.club-name {
+			margin: 5px 0 5px 0;
+			font-weight: bold;
+		}
+		
+		table {
+			font-weight: normal;
+		}
+		
+		td {
+			text-align: left;
+		}
+		
+		.win {
+		    color: #7ca541;
+		}
+		
+		.loss {
+			color: #d51d2a
+		}
+		
       </style>
     </head>
     <body>
-      <button id="changeColor"></button>
+	  <section class="club-container">
+	    <div class="club-selection-container" style="display: none">
+			<label for="club-selector">Выберите клуб:</label>
+			<select id="club-selector">
+				<option>Cagliari Calcio</option>
+				<option>SS Lazio</option>
+				<!-- options generated via script -->
+			</select>			
+		</div>
+		<div class="club-information-container">
+			<div class="club-name-container">
+				<span class="club-name-header unobtrusive-header">Клуб</span>
+				<span class="club-name">Cagliari Calcio</span>
+					<div class="club-logo">
+						<img src="http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png" width="40" height="40" />
+					</div>
+				<button class="change-club-btn">Выбрать...</button>
+			</div>
+			<div class="club-position-container">
+				<span class="club-position-header unobtrusive-header">Позиция в лиге</span>
+				<span class="club-position">9</span>
+			</div>			
+		</div>
+	  </section>
+	  <section class="fixtures-container">
+			<div class="nearest-fixtures-container">
+				<span class="nearest-fixtures-header unobtrusive-header">Ближайшие матчи</span>
+				<table class="nearest-fixtures-table">
+					<tbody>
+						<!-- generate by script -->
+						<tr>
+							<td>
+								<span>vs</span>
+							</td>
+							<td>
+								<img src="http://lmo.online.gamma.mtw.ru/img/teams/small/Torino%20FC.png" width="20" height="20" />
+							</td>
+							<td>
+								<span>Torino FC</span>
+							</td>
+							<th class="fixture-result-container">
+								<span class="draw">0:0</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>vs</span>
+							</td>
+							<td>
+								<img src="http://lmo.online.gamma.mtw.ru/img/teams/small/AC%20Milan.png" width="24" height="24" />
+							</td>
+							<td>
+								<span>AC Milan</span>
+							</td>
+							<th class="fixture-result-container">
+								<span class="win">1:0</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>vs</span>
+							</td>
+							<td>
+								<img src="http://lmo.online.gamma.mtw.ru/img/teams/small/SSC%20Napoli.png" width="24" height="24" />
+							</td>
+							<td>
+								<span>SSC Napoli</span>
+							</td>
+							<th class="fixture-result-container">
+								<span class="loss">0:1</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>vs</span>
+							</td>
+							<td>
+								<img src="http://lmo.online.gamma.mtw.ru/img/teams/small/Juventus%20FC.png" width="24" height="24" />
+							</td>
+							<td>
+								<span>Juventus FC</span>
+							</td>
+							<th class="fixture-result-container">
+								<span class="upcoming">-:-</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>vs</span>
+							</td>
+							<td>
+								<img src="http://lmo.online.gamma.mtw.ru/img/teams/small/Juventus%20FC.png" width="24" height="24" />
+							</td>
+							<td>
+								<span>Juventus FC</span>
+							</td>
+							<th class="fixture-result-container">
+								<span class="upcoming">-:-</span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>vs</span>
+							</td>
+							<td>
+								<img src="http://lmo.online.gamma.mtw.ru/img/teams/small/Juventus%20FC.png" width="24" height="24" />
+							</td>
+							<td>
+								<span>Juventus FC</span>
+							</td>
+							<th class="fixture-result-container">
+								<span class="upcoming">-:-</span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+	  </section>
+	  <section class="league-snippet-container">
+		<div class="tournament-table-snippet-container">
+			<span class="tournament-table-header unobtrusive-header">Таблица</span>
+			<table class="tournament-table">
+				<tbody>
+					<!-- generate by script -->
+					<tr>
+						<span class="table-position">1</span>
+						<img class="table-club-logo" src="http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png" />
+						<span class="table-club-name">Cagliari Calcio</span>
+						<span class="table-points">33</span>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	  </section>	  
+	  <section class="links-container">
+	    <ul class="links-list">
+			<li class="links-list-item">
+				<a href="" target="_blank">Турнирная таблица</a>
+				<a href="" target="_blank">Список тренеров лиги</a>
+				<a href="" target="_blank">Все лиги</a>				
+			</li>
+		</ul>
+	  </section>
+      <script src="popup.js"></script>
     </body>
   </html>
