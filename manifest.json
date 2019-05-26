@@ -2,5 +2,12 @@
   "name": "PES 5 Manager Online",
   "version": "1.0",
   "description": "Расширение для участников проекта PES 5 Online (https://vk.com/wel9_online?w=wall-54185875_112808)",
-  "manifest_version": 2
+  "manifest_version": 2,
+  "permissions": ["storage"],
+  "icons": {
+      "16": "resources/icons/icons8-trophy-16.png",
+      "32": "resources/icons/icons8-trophy-32.png",
+      "48": "resources/icons/icons8-trophy-48.png",
+      "128": "resources/icons/icons8-trophy-128.png"
+    }
 }
