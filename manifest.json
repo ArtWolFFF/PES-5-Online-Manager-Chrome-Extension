@@ -1,13 +1,30 @@
 {
   "name": "PES 5 Manager Online",
-  "version": "1.0",
+  "version": "0.1",
   "description": "Расширение для участников проекта PES 5 Online (https://vk.com/wel9_online?w=wall-54185875_112808)",
   "manifest_version": 2,
-  "permissions": ["storage"],
+  "permissions": ["storage", "declarativeContent", "webNavigation"],
   "icons": {
       "16": "resources/icons/icons8-trophy-16.png",
       "32": "resources/icons/icons8-trophy-32.png",
       "48": "resources/icons/icons8-trophy-48.png",
       "128": "resources/icons/icons8-trophy-128.png"
-    }
+    },
+  "background": {
+      "scripts": [
+		"scripts/background/background.js",
+		"scripts/background/backgroundPsd.js"
+	  ],
+      "persistent": false
+  },
+  "content_scripts": [
+  {
+      "matches": ["https://pesstatsdatabase.com/PSD/Player_old2011.php*"],
+      "js": ["scripts/content/psdPlayerPage.js"]
+  }
+  ],
+  "browser_action": {
+      "default_popup": "views/popup/popup.html"
+  }
+  
 }

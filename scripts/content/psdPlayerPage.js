@@ -11,7 +11,7 @@ let condition = {
 	good: 1,
 	top: 2
 };
-let validConditions = [condition.abysmal, condition.bad, condition.normal, condition.good, condition.top];
+let conditions = [condition.abysmal, condition.bad, condition.normal, condition.good, condition.top];
 let skillsContainer = document.querySelectorAll("#myform table #info b span");
 
 function initialize() {
@@ -103,7 +103,7 @@ player.skills.Teamwork = parseInt(skillsContainer[startIdx + 25].innerHTML);
 
 
 function getSkillsByCondition(condition) {
-	if (validConditions.indexOf(condition) === -1) {
+	if (conditions.indexOf(condition) === -1) {
 		throw "invalid condition";
 	}
 	
@@ -209,6 +209,7 @@ function updateColors() {
 	}
 }
 
+/* Applies the selected player condition, recalculates player's attribute values */
 function applyCondition(condition) {
 	let modifiedSkills = getSkillsByCondition(condition);
 	skillsContainer[startIdx].innerHTML = modifiedSkills.Attack;	
