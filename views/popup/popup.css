@@ -1,0 +1,103 @@
+body {
+			max-width: 1000px;
+			font-size: 14px;
+			/* font-family: "Arabic Typesetting"; */
+		}
+		
+		
+		button {
+			width: 80px;
+			height: 20px;
+			font-size: 12px;
+		}
+	  
+		section {
+			display: block;
+			width: 250px;
+			position: relative;
+			text-align: center;
+			margin: 0 auto;		
+			padding-top: 5px;
+			padding-bottom: 5px;
+			border-bottom: 1px solid #ccc;
+			clear: both;
+		}
+				
+		.club-information-container span {
+			display: block;
+		}
+		
+		.club-name-container {
+			position: relative;
+			display: inline-block;
+			margin: 0 auto;
+			vertical-align: top;
+		}
+		
+		.club-position-container {
+			position: relative;
+			display: inline-block;
+			margin: 0 auto;
+			vertical-align: top;
+		}
+		
+		/* .nearest-fixtures-container {
+					position: relative;
+			float: left;
+			margin: 0 auto;
+		} */
+		
+		.club-name-container {
+			width: 140px;
+		}		
+		
+		.club-position-container {
+			width: 100px;
+		}
+		
+		.club-position {
+			display: block;
+			text-align: center;
+			vertical-align: middle;
+			font-size: 40px;
+			color: green;
+			margin-top: 20px;
+		}
+		
+		.links-list, .links-list-item {
+			display: block;
+		}
+		
+		.nearest-fixtures-container, .league-snippet-container, .links-container {
+			clear: both;
+		}
+		
+		.unobtrusive-header {
+			position: relative;
+			text-align: center;
+			margin: 0 auto;
+			font-size: 12px;
+			opacity: 0.5;
+		}
+		
+		.club-name {
+			margin: 5px 0 5px 0;
+			font-weight: bold;
+		}
+		
+		table {
+			font-weight: normal;
+		}
+		
+		td {
+			text-align: left;
+		}
+		
+		.win {
+		    color: #7ca541;
+		}
+		
+		.loss {
+			color: #d51d2a
+		}
+		
