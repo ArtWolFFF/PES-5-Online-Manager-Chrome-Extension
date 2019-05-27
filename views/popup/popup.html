@@ -45,7 +45,7 @@
 							<td>
 								<span>Torino FC</span>
 							</td>
-							<th class="fixture-result-container">
+							<td class="fixture-result-container">
 								<span class="draw">0:0</span>
 							</td>
 						</tr>
@@ -59,7 +59,7 @@
 							<td>
 								<span>AC Milan</span>
 							</td>
-							<th class="fixture-result-container">
+							<td class="fixture-result-container">
 								<span class="win">1:0</span>
 							</td>
 						</tr>
@@ -73,7 +73,7 @@
 							<td>
 								<span>SSC Napoli</span>
 							</td>
-							<th class="fixture-result-container">
+							<td class="fixture-result-container">
 								<span class="loss">0:1</span>
 							</td>
 						</tr>
@@ -87,7 +87,7 @@
 							<td>
 								<span>Juventus FC</span>
 							</td>
-							<th class="fixture-result-container">
+							<td class="fixture-result-container">
 								<span class="upcoming">-:-</span>
 							</td>
 						</tr>
@@ -101,7 +101,7 @@
 							<td>
 								<span>Juventus FC</span>
 							</td>
-							<th class="fixture-result-container">
+							<td class="fixture-result-container">
 								<span class="upcoming">-:-</span>
 							</td>
 						</tr>
@@ -115,12 +115,15 @@
 							<td>
 								<span>Juventus FC</span>
 							</td>
-							<th class="fixture-result-container">
+							<td class="fixture-result-container">
 								<span class="upcoming">-:-</span>
 							</td>
 						</tr>
 					</tbody>
 				</table>
+                <div class="report-match-container">
+                    <a id="report-match-link" href="" target="_blank">Оформить матч</a>
+                </div>
 			</div>
 	  </section>
 	  <section class="league-snippet-container">
@@ -130,10 +133,18 @@
 				<tbody>
 					<!-- generate by script -->
 					<tr>
-						<span class="table-position">1</span>
-						<img class="table-club-logo" src="http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png" />
-						<span class="table-club-name">Cagliari Calcio</span>
-						<span class="table-points">33</span>
+                        <td>
+                            <span class="table-position">1</span>
+                        </td>
+                        <td>
+						    <img class="table-club-logo" src="http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png" />
+                        </td>
+                        <td>
+                            <span class="table-club-name">Cagliari Calcio</span>
+                        </td>
+                        <td>
+                            <span class="table-points">33</span>
+                        </td>
 					</tr>
 				</tbody>
 			</table>
@@ -141,11 +152,24 @@
 	  </section>	  
 	  <section class="links-container">
 	    <ul class="links-list">
-			<li class="links-list-item">
-				<a href="" target="_blank">Турнирная таблица</a>
-				<a href="" target="_blank">Список тренеров лиги</a>
-				<a href="" target="_blank">Все лиги</a>				
-			</li>
+            <li class="links-list-item">
+                <a id="coaches-list-link" href="" target="_blank">Список тренеров лиги</a>
+            </li>
+            <li class="links-list-item">
+                <a id="rules-link" href="" target="_blank">Регламент</a>
+            </li>
+            <li class="links-list-item">
+                <a id="faq-link" href="" target="_blank">FAQ</a>
+            </li>
+            <li class="links-list-item">
+                <a id="lmo-link" href="" target="_blank">Все лиги</a>
+            </li>
+            <li class="links-list-item">
+                <a id="tournament-table-link" href="" target="_blank">Турнирная таблица</a>
+            </li>
+            <!--<li class="links-list-item">
+                
+            </li>-->			
 		</ul>
 	  </section>
       <script src="popup.js"></script>
