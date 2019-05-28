@@ -215,3 +215,7 @@ table img {
     font-weight: bold;
     color: rgb(17, 57, 210);
 }
+
+label {
+    display: block;
+}

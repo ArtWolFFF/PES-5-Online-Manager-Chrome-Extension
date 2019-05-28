@@ -36,6 +36,26 @@ let teamLogoUrl = "http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Cal
 
 var parser = new DOMParser();
 
+let loadState = {
+    headerUpdated: true,
+    nearestFixturesUpdated: true,
+    leagueTableUpdated: true,
+    linksUpdated: true,
+    reset: function () {
+        loadState.headerUpdated = false;
+        loadState.nearestFixturesUpdated = false;
+        loadState.leagueTableUpdated = false;
+        loadState.linksUpdated = false;
+    },
+    allComponentsLoaded: function () {
+        return loadState.headerUpdated
+            && loadState.nearestFixturesUpdated
+            && loadState.leagueTableUpdated
+            && loadState.linksUpdated;
+    }
+};
+
+
 /* LINKS */
 let matchTopicLinks = {};
 matchTopicLinks[league.SerieA] = "https://vk.com/topic-54185875_40077151";
@@ -66,6 +86,8 @@ function setUpLinks(leagueId) {
     document.getElementById("report-match-link").setAttribute("href", reportMatchUrl);
     let leagueTableUrl = lmo.getLeagueTableUrl(leagueId);
     document.getElementById("tournament-table-link").setAttribute("href", leagueTableUrl);
+
+    loadState.linksUpdated = true;
 }
 
 /* END LINKS */
@@ -175,6 +197,8 @@ function applyLeagueTableInfo(leagueTableInfo) {
 
         leagueTableContainer.appendChild(row);
     }
+
+    loadState.leagueTableUpdated = true;
     return true;
 }
 
@@ -332,6 +356,7 @@ function applyNearestFixturesInfo(fixtures) {
         fixturesContainer.appendChild(row);
     }
 
+    loadState.nearestFixturesUpdated = true;
     return true;
 }
 
@@ -409,38 +434,68 @@ function setUpClubSelector() {
     });
 
     /* Club selection */
-    clubSelector.addEventListener("change", function (event) {
-        currentTeamId = this.value;
+    //clubSelector.addEventListener("change", function (event) {
+    //    //currentTeamId = this.value;
         
-        let teams = teamsByLeague[currentLeague];
-        let currentTeamInfo = teams.filter(t => t.teamId == currentTeamId)[0];
-        currentTeam = currentTeamInfo.teamName;        
-        teamLogoUrl = currentTeamInfo.teamLogoUrl;
 
-        document.getElementsByClassName('club-name')[0].innerText = currentTeam;
-        document.getElementById('header-logo').src = teamLogoUrl;
-        console.log(teamsByLeague);
-        setUpGlobal();
-        // todo sync up
+        
+    //    // todo sync up
+    //});
+
+    document.getElementById('club-confirmation').addEventListener("click", function (event) {
+        if (leagueSelector.value && clubSelector.value > 0) {
+            currentTeamId = clubSelector.value;
+            let teams = teamsByLeague[currentLeague];
+            let currentTeamInfo = teams.filter(t => t.teamId == currentTeamId)[0];
+            currentTeam = currentTeamInfo.teamName;
+            teamLogoUrl = currentTeamInfo.teamLogoUrl;
+
+            setUpGlobal();
+            document.getElementsByClassName('club-name')[0].innerText = currentTeam;
+            document.getElementById('header-logo').src = teamLogoUrl;
+
+            loadState.headerUpdated = true;
+        }
     });
-
-    //for (let league of )
-    //let clubsListUrl = lmo.getLeagueTableUrl(leagueId);
-    //fetch(clubsListUrl)
-    //    .then(response => response.text())
-    //    .then()
-
-    //function getClubsList(leagueTablePage) {
-
-    //}
 }
 setUpClubSelector();
 /* END LEAGUE AND CLUB SELECTION */
 
 
-function setUpGlobal() {
+function setUpGlobal(initial) {
+    loadState.reset();
+    if (initial) {
+        loadState.headerUpdated = true;
+    }
+
+    document.getElementsByTagName('body')[0].style.visibility = "hidden"; // hide everything
     setUpLinks(currentLeague);
     setUpLeagueTable(currentLeague);
     setUpNearestFixtures(currentTeamId, currentLeague);
+
+    let tick = 0;
+    let updateCompleted = false;
+    let maxUpdateCompletionChecks = 100;
+    let updateCompletionCheckInterval = 40;
+    function scheduleUpdateCompletionCheck() {
+        setTimeout(function () {
+            if (updateCompleted) {
+                return;
+            }
+
+            if (loadState.allComponentsLoaded()) {
+                updateCompleted = true;
+                document.getElementsByTagName('body')[0].style.visibility = "visible"; // show everything
+            } else if (tick < maxUpdateCompletionChecks) {
+                tick++;
+                scheduleUpdateCompletionCheck();
+            } else {
+                document.getElementsByTagName('body')[0].style.visibility = "visible";
+                document.getElementsByTagName('body')[0].innerHTML = "\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u0438\u044F. \u0414\u043B\u044F \u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u043E\u0439 \u0440\u0430\u0431\u043E\u0442\u044B \u0442\u0440\u0435\u0431\u0443\u044E\u0442\u0441\u044F \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u0435 \u043A \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443 \u0438 \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E\u0441\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B " + lmo.baseUrl;
+            }
+        }, updateCompletionCheckInterval);
+        tick++;
+    }
+    scheduleUpdateCompletionCheck();    
 }
-setUpGlobal();
+setUpGlobal(true);
