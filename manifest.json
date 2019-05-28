@@ -3,7 +3,12 @@
   "version": "0.1",
   "description": "Расширение для участников проекта PES 5 Online - https://vk.com/wel9_online?w=wall-54185875_112808",
   "manifest_version": 2,
-  "permissions": ["storage", "declarativeContent", "webNavigation"],
+  "permissions": [    
+    "storage",
+    "declarativeContent",
+    "webNavigation",
+    "http://lmo.online.gamma.mtw.ru/"
+  ],
   "icons": {
       "16": "resources/icons/icons8-trophy-16.png",
       "32": "resources/icons/icons8-trophy-32.png",
