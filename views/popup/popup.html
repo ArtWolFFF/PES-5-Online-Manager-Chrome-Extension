@@ -6,20 +6,31 @@
     </head>
     <body>
 	  <section class="club-container">
-	    <div class="club-selection-container" style="display: none">
-			<label for="club-selector">Выберите клуб:</label>
-			<select id="club-selector">
-				<option>Cagliari Calcio</option>
-				<option>SS Lazio</option>
-				<!-- options generated via script -->
-			</select>			
-		</div>
+        <div style="/*display: none*/">
+            <div class="league-selection-container">
+                <label for="league-selector">Выберите лигу:</label>
+                <select id="league-selector">
+                    <option>Serie A</option>
+                    <option>Ligue 1</option>
+                    <!-- options generated via script -->
+                </select>
+            </div>
+            <div class="club-selection-container">
+                <label for="club-selector">Выберите клуб:</label>
+                <select id="club-selector">
+                    <option>Cagliari Calcio</option>
+                    <option>SS Lazio</option>
+                    <!-- options generated via script -->
+                </select>
+            </div>
+            <button id="club-confirmation">OK</button>
+        </div>
 		<div class="club-information-container">
 			<div class="club-name-container">
 				<span class="club-name-header unobtrusive-header">Клуб</span>
 				<span class="club-name">Cagliari Calcio</span>
 					<div class="club-logo">
-						<img src="http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png" width="40" height="40" />
+						<img id="header-logo" src="http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png" width="40" height="40" />
 					</div>
 				<button class="change-club-btn">Выбрать...</button>
 			</div>

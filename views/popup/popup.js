@@ -5,6 +5,9 @@ let lmo = {
     },
     getTeamCalendarUrl: function (leagueId, teamId) {
         return `${lmo.baseUrl}?action=program&file=${leagueId}&selteam=${teamId}`;
+    },
+    getLeagueRosterUrl: function (leagueId) {
+        return `${lmo.baseUrl}?action=program&file=${leagueId}`;
     }
 };
 
@@ -17,9 +20,18 @@ let league = {
     Bundesliga: "bundesliga.l98"
 };
 
+let teamsByLeague = {
+};
+teamsByLeague[league.SerieA] = [];
+teamsByLeague[league.Ligue1] = [];
+teamsByLeague[league.LaLiga] = [];
+teamsByLeague[league.EuroLeague] = [];
+teamsByLeague[league.EPL] = [];
+teamsByLeague[league.Bundesliga] = [];
+
 let currentLeague = league.SerieA;
 let currentTeam = "Cagliari Calcio";
-let currentTeamId = 8;
+let currentTeamId = "8";
 let teamLogoUrl = "http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png";
 
 var parser = new DOMParser();
@@ -56,7 +68,6 @@ function setUpLinks(leagueId) {
     document.getElementById("tournament-table-link").setAttribute("href", leagueTableUrl);
 }
 
-setUpLinks(currentLeague);
 /* END LINKS */
 
 
@@ -111,15 +122,19 @@ function applyLeagueTableInfo(leagueTableInfo) {
     let snippetEndIdx = Math.min(teamsInLeague, currentTeamPosition + snippetDelta);
 
     let leagueTableContainer = document.querySelector('.tournament-table tbody');
-    leagueTableContainer.innerHTML = ''; // remove all current data
+    leagueTableContainer.innerHTML = '<tr class="league-table-header-row"><td></td><td></td><td></td><td class="table-games-cell"><span class="table-games unobtrusive-header">\u0418</span></td><td><span class="table-points unobtrusive-header">\u041E</span></td></tr>';
 
     for (let i = snippetStartIdx; i <= snippetEndIdx; i++) {
         let team = leagueTableInfo.standings[i - 1];
         let row = document.createElement('tr');
 
+        if (team.teamName == currentTeam) {
+            row.className = "highlighted-team";
+        }
+
         let teamPosition = document.createElement('td');
         let teamPositionSpan = document.createElement('span');
-        teamPositionSpan.innerText = team.position;
+        teamPositionSpan.innerText = team.position + ".";
         teamPositionSpan.className = "table-position";
         teamPosition.appendChild(teamPositionSpan);
         row.appendChild(teamPosition);
@@ -137,10 +152,14 @@ function applyLeagueTableInfo(leagueTableInfo) {
         let teamNameSpan = document.createElement('span');
         teamNameSpan.innerText = team.teamName;
         teamNameSpan.className = "table-club-name";
+        if (team.teamName == currentTeam) {
+            teamNameSpan.className += " my-club-name";
+        }
         teamNameTd.appendChild(teamNameSpan);
         row.appendChild(teamNameTd);
 
         let gamesPlayedTd = document.createElement('td');
+        gamesPlayedTd.className = "table-games-cell";
         let gamesPlayedSpan = document.createElement('span');
         gamesPlayedSpan.innerText = team.gamesPlayed;
         gamesPlayedSpan.className = "table-games";
@@ -169,7 +188,6 @@ function setUpLeagueTable(leagueId) {
             console.error(error);
         });
 }
-setUpLeagueTable(currentLeague);
 /* END LEAGUE TABLE SNIPPET */
 
 
@@ -268,12 +286,6 @@ function applyNearestFixturesInfo(fixtures) {
         fixtureNumberTd.appendChild(fixtureNumberSpan);
         row.appendChild(fixtureNumberTd);
 
-        let homeAwayTd = document.createElement('td');
-        let homeAwaySpan = document.createElement('div');
-        homeAwaySpan.className = "home-away";
-        homeAwaySpan.innerHTML = isHomeMatch ? "\u0434" : "\u0433";
-        homeAwayTd.appendChild(homeAwaySpan);
-        row.appendChild(homeAwayTd);
 
         let opponentlogoTd = document.createElement('td');
         let logoImg = document.createElement('img');
@@ -298,6 +310,13 @@ function applyNearestFixturesInfo(fixtures) {
         outcomeSpan.innerText = `${myGoals}:${opponentGoals}`;
         outcomeTd.appendChild(outcomeSpan);
         row.appendChild(outcomeTd);
+
+        let homeAwayTd = document.createElement('td');
+        let homeAwaySpan = document.createElement('div');
+        homeAwaySpan.className = "home-away";
+        homeAwaySpan.innerHTML = isHomeMatch ? "(\u0434)" : "(\u0433)";
+        homeAwayTd.appendChild(homeAwaySpan);
+        row.appendChild(homeAwayTd);
 
         //let buttonTd = document.createElement('td');
         //if (!fixture.concluded) {
@@ -329,5 +348,99 @@ function setUpNearestFixtures(teamId, leagueId) {
         });
 }
 
-setUpNearestFixtures(currentTeamId, currentLeague);
 /* END NEAREST FIXTURES SNIPPET */
+
+/* LEAGUE AND CLUB SELECTION */
+function setUpClubSelector() {
+    let leagueSelector = document.getElementById('league-selector');
+    let clubSelector = document.getElementById('club-selector');
+
+    /* League selection */
+    leagueSelector.innerHTML = '';
+    for (let currentLeagueIdx in league) {
+        /* Create selectable option for each league */
+        let option = document.createElement('option');
+        let leagueId = league[currentLeagueIdx];
+        
+        option.value = leagueId;
+        option.innerText = currentLeagueIdx;
+        leagueSelector.appendChild(option);
+
+        /* Fetch and fill clubs list for each league */
+        let clubsListUrl = lmo.getLeagueRosterUrl(leagueId);
+        fetch(clubsListUrl)
+            .then(response => response.text())
+            .then(function (content) {
+                let htmlDoc = parser.parseFromString(content, 'text/html');
+                let rows = htmlDoc.querySelectorAll('.lmoMenu tr');
+                for (let row of rows) {
+                    let teamName = row.children[0].children[0].title.replace("The Match Schedule from ", "").trim();
+                    let teamLinkQueryStringExpendablePart = `?action=program&file=${leagueId}&selteam=`;
+                    let teamId = row.children[0].children[0].children[0].search.replace(teamLinkQueryStringExpendablePart, "").trim();
+                    let teamLogoUrl = row.getElementsByTagName('img')[0].src;
+                    let teamInfo = {
+                        teamId: teamId,
+                        teamName: teamName,
+                        teamLogoUrl: teamLogoUrl
+                    };
+                    teamsByLeague[leagueId].push(teamInfo);
+                }
+                // fill teamsByLeague
+                teamsByLeague[leagueId] = teamsByLeague[leagueId].sort((t) => t.teamName);
+                
+                Promise.resolve(true);
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
+    }
+
+    leagueSelector.addEventListener("change", function (event) {
+        currentLeague = this.value;
+        // todo sync up
+        let teams = teamsByLeague[currentLeague];
+        clubSelector.innerHTML = "";
+        for (let team of teams) {
+            let option = document.createElement('option');
+            option.value = team.teamId;
+            option.innerText = team.teamName;
+            clubSelector.appendChild(option);
+        }
+    });
+
+    /* Club selection */
+    clubSelector.addEventListener("change", function (event) {
+        currentTeamId = this.value;
+        
+        let teams = teamsByLeague[currentLeague];
+        let currentTeamInfo = teams.filter(t => t.teamId == currentTeamId)[0];
+        currentTeam = currentTeamInfo.teamName;        
+        teamLogoUrl = currentTeamInfo.teamLogoUrl;
+
+        document.getElementsByClassName('club-name')[0].innerText = currentTeam;
+        document.getElementById('header-logo').src = teamLogoUrl;
+        console.log(teamsByLeague);
+        setUpGlobal();
+        // todo sync up
+    });
+
+    //for (let league of )
+    //let clubsListUrl = lmo.getLeagueTableUrl(leagueId);
+    //fetch(clubsListUrl)
+    //    .then(response => response.text())
+    //    .then()
+
+    //function getClubsList(leagueTablePage) {
+
+    //}
+}
+setUpClubSelector();
+/* END LEAGUE AND CLUB SELECTION */
+
+
+function setUpGlobal() {
+    setUpLinks(currentLeague);
+    setUpLeagueTable(currentLeague);
+    setUpNearestFixtures(currentTeamId, currentLeague);
+}
+setUpGlobal();
