@@ -1,9 +1,9 @@
 let lmo = {
     baseUrl: "http://lmo.online.gamma.mtw.ru/lmo.php",
-    getLeagueTableUrl: function(leagueId) {
+    getLeagueTableUrl: function (leagueId) {
         return `${lmo.baseUrl}?action=table&file=${leagueId}`;
     },
-    getTeamCalendarUrl: function(leagueId, teamId) {
+    getTeamCalendarUrl: function (leagueId, teamId) {
         return `${lmo.baseUrl}?action=program&file=${leagueId}&selteam=${teamId}`;
     }
 };
@@ -19,6 +19,7 @@ let league = {
 
 let currentLeague = league.SerieA;
 let currentTeam = "Cagliari Calcio";
+let currentTeamId = 8;
 let teamLogoUrl = "http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png";
 
 var parser = new DOMParser();
@@ -103,7 +104,7 @@ function parseLeagueTablePage(content) {
 
 function applyLeagueTableInfo(leagueTableInfo) {
     let currentTeamPosition = leagueTableInfo.currentPosition;
-    document.getElementsByClassName('club-position').innerText = currentTeamPosition;
+    document.getElementsByClassName('club-position')[0].innerText = currentTeamPosition;
     let teamsInLeague = leagueTableInfo.standings.length;
     let snippetDelta = 3; // количество команд выше и ниже выбранной команды, которое показывается в сниппете таблицы
     let snippetStartIdx = Math.max(1, currentTeamPosition - snippetDelta);
@@ -113,9 +114,9 @@ function applyLeagueTableInfo(leagueTableInfo) {
     leagueTableContainer.innerHTML = ''; // remove all current data
 
     for (let i = snippetStartIdx; i <= snippetEndIdx; i++) {
-        let team = leagueTableInfo.standings[i - 1];        
+        let team = leagueTableInfo.standings[i - 1];
         let row = document.createElement('tr');
-        
+
         let teamPosition = document.createElement('td');
         let teamPositionSpan = document.createElement('span');
         teamPositionSpan.innerText = team.position;
@@ -174,27 +175,159 @@ setUpLeagueTable(currentLeague);
 
 
 /* NEAREST FIXTURES SNIPPET */
-function applyNearestFixturesInfo(nearestFixtures) {
-    let fixturesContainer = document.querySelector('.nearest-fixtures-table tbody');
-    fixturesContainer.innerHTML = ''; // remove all current data
-    //for (let i = snippetStartIdx; i <= snippetEndIdx; i++) {
-    //    // TODO sort out
-    //    let team = nearestFixtures[i];
-    //    let row = document.createElement('tr');
-    //    let vs = document.createElement('td');
-    //    vs.innerHTML("vs");
-    //    row.appendChild(vs);
-    //    let logoTd = document.createElement('td');
-    //    let logoImg = document.createElement('img');
-    //    logoImg.src = team.logoUrl;
-    //    logoImg.width = 20;
-    //    logoImg.height = 20;
-    //    logoTd.appendChild(logoImg);
-    //    row.appendChild(logoTd);
+function parseTeamCalendarPage(content) {
+    /* Data structure for nearest fixtures */
+    let fixtures = [
+        //{
+        //    fixtureId: 1,
+        //    homeTeam: "AC Milan",
+        //    homeTeamLogoUrl: "http://lmo.online.gamma.mtw.ru/img/teams/small/AC%20Milan.png",
+        //    awayTeam: "Cagliari Calcio",
+        //    awayTeamLogoUrl: "http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png",
+        //    homeTeamGoals: 1,
+        //    awayTeamGoals: 2,
+        //    concluded: true
+        //}
+    ];
+    let htmlDoc = parser.parseFromString(content, 'text/html');
+    let rows = htmlDoc.querySelectorAll('.lmoInner tr');
 
-    //    
-    //    fixturesContainer.appendChild(row);
-    //}
+    for (let row of rows) {
+        let isPlayed = row.children[6].innerText != "_";
+        let fixture = {
+            fixtureId: parseInt(row.children[0].innerText.trim()),
+            homeTeam: row.children[2].innerText.trim(),
+            homeTeamLogoUrl: row.children[2].getElementsByTagName('img')[0].src,
+            awayTeam: row.children[4].innerText.trim(),
+            awayTeamLogoUrl: row.children[4].getElementsByTagName('img')[0].src,
+            homeTeamGoals: isPlayed ? parseInt(row.children[6].innerText) : 0,
+            awayTeamGoals: isPlayed ? parseInt(row.children[8].innerText) : 0,
+            concluded: isPlayed
+        };
+
+        fixtures.push(fixture);
+    }
+
+    return Promise.resolve(fixtures);
 }
 
+function applyNearestFixturesInfo(fixtures) {
+    let fixturesDelta = 3; // отображаемое количество сыгранных туров,
+    let concludedFixtures = fixtures
+        .filter(f => f.concluded)
+        .sort(f => f.fixtureId);
+
+    let recentlyConcludedFixtures = concludedFixtures
+        .slice(concludedFixtures.length - fixturesDelta, concludedFixtures.length);
+    let upcomingFixtures = fixtures
+        .filter(f => !f.concluded)
+        .sort(f => f.fixtureId)
+        .slice(0, fixturesDelta);
+
+    let snippetFixtures = [];
+    snippetFixtures = snippetFixtures.concat(recentlyConcludedFixtures);
+    snippetFixtures = snippetFixtures.concat(upcomingFixtures);
+
+    let fixturesContainer = document.querySelector('.nearest-fixtures-table tbody');
+    fixturesContainer.innerHTML = ''; // remove all current data
+
+    //let headerRow = document.createElement('th');
+    //let fixtureHeaderTd = document.createElement('td');
+    //fixtureHeaderTd.innerText = "Тур";
+    //let homeAwayHeaderTd = document.createElement('td');
+    //homeAwayHeaderTd.innerText = "Д";
+    //let opponentLogoHeaderTd = document.createElement('td');
+    
+    //let opponentTeamHeaderTd = document.createElement('td');
+    //opponentTeamHeaderTd.innerText = "Соперник";
+    //let outcomeHeaderTd = document.createElement('td');
+
+    //let opponentButtonHeaderTd = document.createElement('td');
+
+    for (let fixture of snippetFixtures) {
+        let isHomeMatch = fixture.homeTeam == currentTeam;
+        let opponent = isHomeMatch ? fixture.awayTeam : fixture.homeTeam;
+        let opponentLogoUrl = isHomeMatch ? fixture.awayTeamLogoUrl : fixture.homeTeamLogoUrl;
+        let myGoals = fixture.concluded
+            ? isHomeMatch ? fixture.homeTeamGoals : fixture.awayTeamGoals
+            : "-";
+        let opponentGoals = fixture.concluded
+            ? !isHomeMatch ? fixture.homeTeamGoals : fixture.awayTeamGoals
+            : "-";
+        let outcome = myGoals > opponentGoals
+            ? "win"
+            : myGoals < opponentGoals ? "loss" : "draw";
+
+        let row = document.createElement('tr');
+
+        let fixtureNumberTd = document.createElement('td');
+        fixtureNumberTd.className = "fixture-number-cell";
+        let fixtureNumberSpan = document.createElement('div');
+        fixtureNumberSpan.className = "fixture-number";
+        fixtureNumberSpan.innerText = "Tur " + fixture.fixtureId;
+        fixtureNumberTd.appendChild(fixtureNumberSpan);
+        row.appendChild(fixtureNumberTd);
+
+        let homeAwayTd = document.createElement('td');
+        let homeAwaySpan = document.createElement('div');
+        homeAwaySpan.className = "home-away";
+        homeAwaySpan.innerHTML = isHomeMatch ? "\u0434" : "\u0433";
+        homeAwayTd.appendChild(homeAwaySpan);
+        row.appendChild(homeAwayTd);
+
+        let opponentlogoTd = document.createElement('td');
+        let logoImg = document.createElement('img');
+        logoImg.src = opponentLogoUrl;
+        logoImg.width = 20;
+        logoImg.height = 20;
+        logoImg.className = "fixture-opponent-logo";
+        opponentlogoTd.appendChild(logoImg);
+        row.appendChild(opponentlogoTd);
+
+        let opponentTd = document.createElement('td');
+        let opponentSpan = document.createElement('div');
+        opponentSpan.className = "fixture-opponent-name";
+        opponentSpan.innerText = opponent;
+        opponentTd.appendChild(opponentSpan);
+        row.appendChild(opponentTd);
+
+        let outcomeTd = document.createElement('td');
+        outcomeTd.className = "fixture-result-container";
+        let outcomeSpan = document.createElement('div');
+        outcomeSpan.className = outcome;
+        outcomeSpan.innerText = `${myGoals}:${opponentGoals}`;
+        outcomeTd.appendChild(outcomeSpan);
+        row.appendChild(outcomeTd);
+
+        //let buttonTd = document.createElement('td');
+        //if (!fixture.concluded) {
+        //    let contactManagerBtn = document.createElement('a');
+        //    contactManagerBtn.className = "contact-manager-link";
+        //    contactManagerBtn.target = "_blank";
+        //    contactManagerBtn.href = "https://vk.com/omgfuuuck";
+        //    contactManagerBtn.title = "Написать тренеру";
+        //    buttonTd.appendChild(contactManagerBtn);
+        //}
+        //row.appendChild(buttonTd);
+
+        fixturesContainer.appendChild(row);
+    }
+
+    return true;
+}
+
+function setUpNearestFixtures(teamId, leagueId) {
+    let teamCalendarUrl = lmo.getTeamCalendarUrl(leagueId, teamId);
+    teamCalendarUrl.innerHTML = ''; // remove all current data
+
+    fetch(teamCalendarUrl)
+        .then(response => response.text())
+        .then(parseTeamCalendarPage)
+        .then(applyNearestFixturesInfo)
+        .catch(function (error) {
+            console.error(error);
+        });
+}
+
+setUpNearestFixtures(currentTeamId, currentLeague);
 /* END NEAREST FIXTURES SNIPPET */

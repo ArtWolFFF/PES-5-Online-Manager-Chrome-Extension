@@ -29,8 +29,13 @@ ul {
 
 a, a:visited {
     color: rgb(0, 119, 204);
-    font-size: 13px;
+    font-size: 12px;
     text-decoration: none;
+}
+
+a:hover {
+    /*color: #27a201;*/
+    font-weight: bold;
 }
 
 .club-information-container span {
@@ -69,9 +74,9 @@ a, a:visited {
     display: block;
     text-align: center;
     vertical-align: middle;
-    font-size: 40px;
+    font-size: 56px;
     color: green;
-    margin-top: 20px;
+    margin-top: 7px;
 }
 
 .links-list, .links-list-item {
@@ -120,8 +125,42 @@ td {
     text-align: center;
 }
 
+    .report-match-container img {
+        margin-bottom: -2px;
+    }
+
 #report-match-link {
         /*display: block;
     text-align: center;
     margin: 0 auto;*/
+}
+
+.contact-manager-link {
+    display: block;
+    background: url(images/envelope.svg) 0 no-repeat;
+    background-size: contain;
+    width: 30px;
+    height: 25px;
+}
+
+.fixture-number {
+    width: 30px;
+    font-size: 13px;
+}
+
+.nearest-fixtures-table {
+    padding: 0 9px;
+    border-spacing: 0;
+}
+
+.nearest-fixtures-table td {
+    padding: 2px;
+}
+
+.fixture-opponent-name {
+    width: 135px;
+}
+
+.fixture-number-cell {
+    border-right: 1px solid #cccccc;
 }
