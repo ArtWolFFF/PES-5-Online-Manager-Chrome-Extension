@@ -87,17 +87,20 @@ let loadState = {
     nearestFixturesUpdated: true,
     leagueTableUpdated: true,
     linksUpdated: true,
+    managerContactsUpdated: true,
     reset: function () {
         loadState.headerUpdated = false;
         loadState.nearestFixturesUpdated = false;
         loadState.leagueTableUpdated = false;
         loadState.linksUpdated = false;
+        loadState.managerContactsUpdated = false;
     },
     allComponentsLoaded: function () {
         return loadState.headerUpdated
             && loadState.nearestFixturesUpdated
             && loadState.leagueTableUpdated
-            && loadState.linksUpdated;
+            && loadState.linksUpdated
+            && loadState.managerContactsUpdated;
     }
 };
 
@@ -140,6 +143,7 @@ coachListLinks[league.EuroLeague] = "https://vk.com/topic-54185875_37150957?post
 coachListLinks[league.EPL] = "https://vk.com/topic-54185875_37150957?post=87357";
 coachListLinks[league.Bundesliga] = "https://vk.com/topic-54185875_37150957?post=87360";
 
+let managerListUrl = "https://vk.com/topic-54185875_37150957";
 let rulesUrl = "https://vk.com/wel9_online?w=page-54185875_44626803";
 let faqUrl = "https://vk.com/wel9_online?w=page-54185875_49853606";
 
@@ -316,12 +320,12 @@ function parseTeamCalendarPage(content) {
 
         fixtures.push(fixture);
     }
+    allFixtures = fixtures; // saving globally for later use
 
     return Promise.resolve(fixtures);
 }
 
 function applyNearestFixturesInfo(fixtures) {
-    allFixtures = fixtures; // saving globally for later use
 
     let fixturesDelta = 3;
     let concludedFixtures = fixtures
@@ -403,22 +407,71 @@ function applyFixtures(fixtures) {
         homeAwayTd.appendChild(homeAwaySpan);
         row.appendChild(homeAwayTd);
 
-    //let buttonTd = document.createElement('td');
-    //if (!fixture.concluded) {
-    //    let contactManagerBtn = document.createElement('a');
-    //    contactManagerBtn.className = "contact-manager-link";
-    //    contactManagerBtn.target = "_blank";
-    //    contactManagerBtn.href = "https://vk.com/omgfuuuck";
-    //    contactManagerBtn.title = "Написать тренеру";
-    //    buttonTd.appendChild(contactManagerBtn);
-    //}
-    //row.appendChild(buttonTd);
+    let buttonTd = document.createElement('td');
+    if (!fixture.concluded) {
+        let contactManagerBtn = document.createElement('a');
+        contactManagerBtn.className = "contact-manager-link disabled";        
+        contactManagerBtn.target = "_blank";
+        contactManagerBtn.href = "javascript:void(0);";
+        contactManagerBtn.title = "\u041D\u0430\u043F\u0438\u0441\u0430\u0442\u044C \u0442\u0440\u0435\u043D\u0435\u0440\u0443";
+        buttonTd.appendChild(contactManagerBtn);
+    }
+    row.appendChild(buttonTd);
 
         fixturesContainer.appendChild(row);
     }
 
+    setUpManagersInfo();
+
     loadState.nearestFixturesUpdated = true;
     return true;
+}
+
+function applyManagerPageData(content) {
+    //let managerList = [
+    //    //{
+    //    //    teamName: "",
+    //    //    managerId: ""
+    //    //}
+    //];
+
+    let htmlDoc = parser.parseFromString(content, 'text/html');
+    let links = htmlDoc.querySelectorAll('.bp_text a');
+    let teamsInLeague = teamsByLeague[globalData.getCurrentLeague()];
+    let fixtureOpponentNameElements = document.getElementsByClassName('fixture-opponent-name');
+    for (let link of links) {
+        let possibleClubName = link.previousSibling;
+        try {
+            possibleClubName = possibleClubName.textContent.replace("-", "").replace("—","").replace("-","").trim();
+            for (let opponentNameEl of fixtureOpponentNameElements) {
+                if (opponentNameEl.innerText.trim() == possibleClubName) {
+                    let trow = opponentNameEl.parentElement.parentElement;
+                    let contactManagerLinks = trow.getElementsByClassName('contact-manager-link');
+                    if (contactManagerLinks.length > 0) {
+                        let contactManagerLink = contactManagerLinks[0];
+                        let vkId = link.getAttribute("mention_id").replace("id", "");
+                        contactManagerLink.href = "https://vk.com/write" + vkId;
+                        contactManagerLink.classList.remove("disabled");
+                    }
+                }
+            }
+        } catch (e) {
+            // quite possible that it's not actually a club name, so do nothing
+        }
+    }
+    
+    loadState.managerContactsUpdated = true;
+    return Promise.resolve(true);//Promise.resolve(managerList);
+}
+
+function setUpManagersInfo() {
+    fetch(managerListUrl)
+        .then(response => response.text())
+        .then(applyManagerPageData)
+        .catch(function (error) {
+            console.error(error);
+            loadState.managerContactsUpdated = true; // not a primary feature, so we report loading as finished regardless of the outcome
+        });
 }
 
 function setUpNearestFixtures(teamId, leagueId) {
@@ -600,8 +653,8 @@ function setUpGlobal(initial) {
 
     let tick = 0;
     let updateCompleted = false;
-    let maxUpdateCompletionChecks = 100;
-    let updateCompletionCheckInterval = 40;
+    let maxUpdateCompletionChecks = 150;
+    let updateCompletionCheckInterval = 50;
     function scheduleUpdateCompletionCheck() {
         setTimeout(function () {
             if (updateCompleted) {

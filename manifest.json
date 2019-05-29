@@ -5,7 +5,8 @@
   "manifest_version": 2,
   "permissions": [    
     "storage",
-    "http://lmo.online.gamma.mtw.ru/"
+    "http://lmo.online.gamma.mtw.ru/",
+    "https://vk.com/"
   ],
   "icons": {
       "16": "resources/icons/icons8-trophy-16.png",
