@@ -476,8 +476,9 @@ function setUpClubSelector() {
                     };
                     teamsByLeague[leagueId].push(teamInfo);
                 }
-                // fill teamsByLeague
-                teamsByLeague[leagueId] = teamsByLeague[leagueId].sort((t) => t.teamName);
+                // global teamsByLeague
+                teamsByLeague[leagueId] = teamsByLeague[leagueId]
+                    .sort(function (a, b) { return a.teamName < b.teamName ? -1 : a.teamName > b.teamName ? 1 : 0 });
                 
                 Promise.resolve(true);
             })
