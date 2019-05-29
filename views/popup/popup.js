@@ -33,6 +33,8 @@ let currentLeague = league.SerieA;
 let currentTeam = "Cagliari Calcio";
 let currentTeamId = "8";
 let teamLogoUrl = "http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png";
+let nearestFixtures = [];
+let allFixtures = [];
 
 var parser = new DOMParser();
 
@@ -55,6 +57,26 @@ let loadState = {
     }
 };
 
+let leagueSelector = document.getElementById('league-selector');
+let clubSelector = document.getElementById('club-selector');
+
+/* UTILS */
+HTMLElement.prototype.hide = function (toggleVisibility) {
+    if (toggleVisibility) {
+        this.style.visibility = "hidden";
+    } else {
+        this.style.display = "none";
+    }
+}
+
+HTMLElement.prototype.show = function (toggleVisibility) {
+    if (toggleVisibility) {
+        this.style.visibility = "visible";
+    } else {
+        this.style.display = "block";
+    }
+}
+/* END UTILS */
 
 /* LINKS */
 let matchTopicLinks = {};
@@ -254,13 +276,15 @@ function parseTeamCalendarPage(content) {
 }
 
 function applyNearestFixturesInfo(fixtures) {
-    let fixturesDelta = 3; // отображаемое количество сыгранных туров,
+    allFixtures = fixtures; // caching for later use
+
+    let fixturesDelta = 3;
     let concludedFixtures = fixtures
         .filter(f => f.concluded)
         .sort(f => f.fixtureId);
 
     let recentlyConcludedFixtures = concludedFixtures
-        .slice(concludedFixtures.length - fixturesDelta, concludedFixtures.length);
+        .slice(Math.max(0, concludedFixtures.length - fixturesDelta), concludedFixtures.length);
     let upcomingFixtures = fixtures
         .filter(f => !f.concluded)
         .sort(f => f.fixtureId)
@@ -270,6 +294,11 @@ function applyNearestFixturesInfo(fixtures) {
     snippetFixtures = snippetFixtures.concat(recentlyConcludedFixtures);
     snippetFixtures = snippetFixtures.concat(upcomingFixtures);
 
+    nearestFixtures = snippetFixtures;  // caching for later use
+    return applyFixtures(snippetFixtures);
+}
+
+function applyFixtures(fixtures) {
     let fixturesContainer = document.querySelector('.nearest-fixtures-table tbody');
     fixturesContainer.innerHTML = ''; // remove all current data
 
@@ -279,14 +308,14 @@ function applyNearestFixturesInfo(fixtures) {
     //let homeAwayHeaderTd = document.createElement('td');
     //homeAwayHeaderTd.innerText = "Д";
     //let opponentLogoHeaderTd = document.createElement('td');
-    
+
     //let opponentTeamHeaderTd = document.createElement('td');
     //opponentTeamHeaderTd.innerText = "Соперник";
     //let outcomeHeaderTd = document.createElement('td');
 
     //let opponentButtonHeaderTd = document.createElement('td');
 
-    for (let fixture of snippetFixtures) {
+    for (let fixture of fixtures) {
         let isHomeMatch = fixture.homeTeam == currentTeam;
         let opponent = isHomeMatch ? fixture.awayTeam : fixture.homeTeam;
         let opponentLogoUrl = isHomeMatch ? fixture.awayTeamLogoUrl : fixture.homeTeamLogoUrl;
@@ -306,7 +335,7 @@ function applyNearestFixturesInfo(fixtures) {
         fixtureNumberTd.className = "fixture-number-cell";
         let fixtureNumberSpan = document.createElement('div');
         fixtureNumberSpan.className = "fixture-number";
-        fixtureNumberSpan.innerText = "Tur " + fixture.fixtureId;
+        fixtureNumberSpan.innerText = "\u0422\u0443\u0440 " + fixture.fixtureId;
         fixtureNumberTd.appendChild(fixtureNumberSpan);
         row.appendChild(fixtureNumberTd);
 
@@ -342,16 +371,16 @@ function applyNearestFixturesInfo(fixtures) {
         homeAwayTd.appendChild(homeAwaySpan);
         row.appendChild(homeAwayTd);
 
-        //let buttonTd = document.createElement('td');
-        //if (!fixture.concluded) {
-        //    let contactManagerBtn = document.createElement('a');
-        //    contactManagerBtn.className = "contact-manager-link";
-        //    contactManagerBtn.target = "_blank";
-        //    contactManagerBtn.href = "https://vk.com/omgfuuuck";
-        //    contactManagerBtn.title = "Написать тренеру";
-        //    buttonTd.appendChild(contactManagerBtn);
-        //}
-        //row.appendChild(buttonTd);
+    //let buttonTd = document.createElement('td');
+    //if (!fixture.concluded) {
+    //    let contactManagerBtn = document.createElement('a');
+    //    contactManagerBtn.className = "contact-manager-link";
+    //    contactManagerBtn.target = "_blank";
+    //    contactManagerBtn.href = "https://vk.com/omgfuuuck";
+    //    contactManagerBtn.title = "Написать тренеру";
+    //    buttonTd.appendChild(contactManagerBtn);
+    //}
+    //row.appendChild(buttonTd);
 
         fixturesContainer.appendChild(row);
     }
@@ -373,15 +402,20 @@ function setUpNearestFixtures(teamId, leagueId) {
         });
 }
 
+
 /* END NEAREST FIXTURES SNIPPET */
 
 /* LEAGUE AND CLUB SELECTION */
 function setUpClubSelector() {
-    let leagueSelector = document.getElementById('league-selector');
-    let clubSelector = document.getElementById('club-selector');
-
     /* League selection */
     leagueSelector.innerHTML = '';
+    let noLeagueOption = document.createElement('option');
+    noLeagueOption.value = "";
+    noLeagueOption.setAttribute("disabled", "disabled");
+    noLeagueOption.setAttribute("selected", "selected");
+    noLeagueOption.innerText = "...";
+    leagueSelector.appendChild(noLeagueOption);
+
     for (let currentLeagueIdx in league) {
         /* Create selectable option for each league */
         let option = document.createElement('option');
@@ -418,30 +452,46 @@ function setUpClubSelector() {
             .catch(function (error) {
                 console.error(error);
             });
-    }
 
-    leagueSelector.addEventListener("change", function (event) {
-        currentLeague = this.value;
-        // todo sync up
-        let teams = teamsByLeague[currentLeague];
-        clubSelector.innerHTML = "";
-        for (let team of teams) {
-            let option = document.createElement('option');
-            option.value = team.teamId;
-            option.innerText = team.teamName;
-            clubSelector.appendChild(option);
+        leagueSelector.addEventListener("change", function (event) {
+            currentLeague = this.value;
+            // todo sync up
+            let teams = teamsByLeague[currentLeague];
+
+            document.getElementsByClassName('club-selection-container')[0].show();
+
+            clubSelector.innerHTML = "";
+            for (let team of teams) {
+                let option = document.createElement('option');
+                option.value = team.teamId;
+                option.innerText = team.teamName;
+                clubSelector.appendChild(option);
+            }
+        });
+    }
+}
+/* END LEAGUE AND CLUB SELECTION */
+
+/* EVENT HANDLERS */
+function setUpEventHandlers() {
+    document.getElementsByClassName('nearest-fixtures-header')[0].addEventListener("click", function (event) {
+        let isFullCalendar = this.className.indexOf("full-calendar") > -1;
+        let headerText = document.getElementsByClassName("nearest-fixtures-header-text")[0];
+        if (isFullCalendar) {
+            // toggle nearest fixtures
+            this.className = this.className.replace("full-calendar", "");
+            headerText.innerText = "\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0438\u0435 \u043C\u0430\u0442\u0447\u0438";
+            headerText.title = "\u041F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0438\u0442\u044C\u0441\u044F \u043D\u0430 \u043A\u0430\u043B\u0435\u043D\u0434\u0430\u0440\u044C";
+            applyFixtures(nearestFixtures);
+        } else {
+            // toggle full calendar
+            this.className += " full-calendar";
+            headerText.innerText = "\u041A\u0430\u043B\u0435\u043D\u0434\u0430\u0440\u044C";
+            headerText.title = "\u041F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0438\u0442\u044C\u0441\u044F \u043D\u0430 \u0431\u043B\u0438\u0436\u0430\u0439\u0448\u0438\u0435 \u043C\u0430\u0442\u0447\u0438";
+            applyFixtures(allFixtures);
         }
     });
-
-    /* Club selection */
-    //clubSelector.addEventListener("change", function (event) {
-    //    //currentTeamId = this.value;
-        
-
-        
-    //    // todo sync up
-    //});
-
+    
     document.getElementById('club-confirmation').addEventListener("click", function (event) {
         if (leagueSelector.value && clubSelector.value > 0) {
             currentTeamId = clubSelector.value;
@@ -454,21 +504,62 @@ function setUpClubSelector() {
             document.getElementsByClassName('club-name')[0].innerText = currentTeam;
             document.getElementById('header-logo').src = teamLogoUrl;
 
+            toggleSelectedClubState();
+
             loadState.headerUpdated = true;
         }
     });
+
+    document.getElementById('change-club-btn').addEventListener("click", function (event) {
+        toggleNoActiveClubState();
+        //currentTeam = null;
+        //currentLeague = null;
+        //currentTeamId = null;
+        //teamLogoUrl = null;
+    });
 }
-setUpClubSelector();
-/* END LEAGUE AND CLUB SELECTION */
+/* END EVENT HANDLERS */
+
+function hideEverything() {
+    document.getElementsByTagName('body')[0].hide(true); // hide everything
+}
+
+function showEverything() {
+    document.getElementsByTagName('body')[0].show(true); // show everything
+}
+
+function toggleNoActiveClubState() {
+    document.getElementsByClassName('league-and-club-selection-container')[0].show();
+    document.getElementsByClassName('club-information-container')[0].hide();
+    document.getElementsByClassName('fixtures-container')[0].hide();
+    document.getElementsByClassName('league-snippet-container')[0].hide();
+}
+
+function toggleSelectedClubState() {
+    document.getElementsByClassName('league-and-club-selection-container')[0].hide();
+    document.getElementsByClassName('club-information-container')[0].show();
+    document.getElementsByClassName('fixtures-container')[0].show();
+    document.getElementsByClassName('league-snippet-container')[0].show();
+}
 
 
 function setUpGlobal(initial) {
+
     loadState.reset();
     if (initial) {
         loadState.headerUpdated = true;
+        // run these methods once
+        setUpClubSelector();
+        setUpEventHandlers();
     }
 
-    document.getElementsByTagName('body')[0].style.visibility = "hidden"; // hide everything
+    if (currentTeam != null && currentLeague != null) {
+        toggleSelectedClubState();
+    } else {
+        toggleNoActiveClubState();
+    }
+
+    hideEverything(); // prevent flickering; once loadstate tells us that everything has updated properly, we'll show everything
     setUpLinks(currentLeague);
     setUpLeagueTable(currentLeague);
     setUpNearestFixtures(currentTeamId, currentLeague);
@@ -485,13 +576,13 @@ function setUpGlobal(initial) {
 
             if (loadState.allComponentsLoaded()) {
                 updateCompleted = true;
-                document.getElementsByTagName('body')[0].style.visibility = "visible"; // show everything
+                showEverything();
             } else if (tick < maxUpdateCompletionChecks) {
                 tick++;
                 scheduleUpdateCompletionCheck();
             } else {
-                document.getElementsByTagName('body')[0].style.visibility = "visible";
                 document.getElementsByTagName('body')[0].innerHTML = "\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u0438\u044F. \u0414\u043B\u044F \u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u043E\u0439 \u0440\u0430\u0431\u043E\u0442\u044B \u0442\u0440\u0435\u0431\u0443\u044E\u0442\u0441\u044F \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u0435 \u043A \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443 \u0438 \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E\u0441\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B " + lmo.baseUrl;
+                showDynamicParts();
             }
         }, updateCompletionCheckInterval);
         tick++;

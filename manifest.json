@@ -5,8 +5,6 @@
   "manifest_version": 2,
   "permissions": [    
     "storage",
-    "declarativeContent",
-    "webNavigation",
     "http://lmo.online.gamma.mtw.ru/"
   ],
   "icons": {

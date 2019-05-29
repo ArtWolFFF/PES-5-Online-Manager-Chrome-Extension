@@ -31,6 +31,7 @@ a, a:visited {
     color: rgb(0, 119, 204);
     font-size: 12px;
     text-decoration: none;
+    user-select: none;
 }
 
 a:hover {
@@ -96,7 +97,8 @@ a:hover {
     text-align: center;
     margin: 0 auto;
     font-size: 12px;
-    opacity: 0.5;
+    color: rgba(0,0,0,0.5);
+    user-select: none;
 }
 
 .club-name {
@@ -138,8 +140,8 @@ td {
 }
 
 .fixture-number {
-    width: 30px;
-    font-size: 13px;
+    width: 38px;
+    font-size: 12px;
 }
 
 table {
@@ -152,7 +154,7 @@ table {
 }
 
 .fixture-opponent-name {
-    width: 135px;
+    width: 142px;
 }
 
 .fixture-number-cell {
@@ -200,7 +202,7 @@ table img {
 }
 
 .table-club-name {
-    width: 153px;
+    width: 168px;
 }
 
 .tournament-table .table-games {
@@ -218,4 +220,70 @@ table img {
 
 label {
     display: block;
+}
+
+.toggle-schedule {
+    margin-top: -2px;
+    height: 15px;
+    width: 15px;
+    display: inline-block;
+    vertical-align: middle;
+    cursor: pointer;
+    opacity: 0.5;
+    background: url(images/down.svg) 0 0 no-repeat;
+    background-size: contain;
+    /*color: rgb(0, 119, 204);*/
+}
+
+.full-calendar .toggle-schedule {
+    background: url(images/up.svg) 0 0 no-repeat;
+    background-size: contain;
+}
+
+.toggle-schedule:hover {
+    background: url(images/down-blue.svg) 0 0 no-repeat;
+    background-size: contain;
+    opacity: 1;
+    border-radius: 50%;
+}
+
+.full-calendar .toggle-schedule:hover {
+    background: url(images/up-blue.svg) 0 0 no-repeat;
+    background-size: contain;
+}
+
+.nearest-fixtures-header {
+    cursor: pointer;
+}
+
+.nearest-fixtures-header:hover {
+    color: rgb(0, 119, 204);
+}
+
+    .nearest-fixtures-header:hover .toggle-schedule {
+        background: url(images/down-blue.svg) 0 0 no-repeat;
+        background-size: contain;
+        opacity: 1;
+        border-radius: 50%;
+    }
+
+    .nearest-fixtures-header:hover.full-calendar .toggle-schedule {
+        background: url(images/up-blue.svg) 0 0 no-repeat;
+        background-size: contain;
+    }
+
+.club-selection-container {
+    display: none;
+}
+
+.selection-container {
+    margin-bottom: 20px;
+}
+
+    .selection-container select {
+        width: 210px;
+    }
+
+#club-confirmation {
+    margin-bottom: 15px;
 }
