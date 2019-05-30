@@ -135,8 +135,8 @@ td {
     display: block;
     background: url(images/envelope.svg) 0 no-repeat;
     background-size: contain;
-    width: 30px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
 }
 
 .fixture-number {
@@ -290,4 +290,25 @@ label {
 
 .disabled {
     opacity: 0.5;
+}
+
+.home-link {
+    position: absolute;
+    display: block;
+    width: 40px;
+    height: 40px;
+    background: url(images/home.svg) 0 no-repeat;
+    background-size: contain;
+    top: 15px;
+    left: 30px;
+    opacity: 0.7;
+}
+
+.home-link:hover {
+    opacity: 1;
+}
+
+.inline-link:not(:last-child) {
+    border-right: 1px solid rgb(0, 119, 204);
+    padding-right: 5px;
 }

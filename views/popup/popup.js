@@ -146,13 +146,15 @@ coachListLinks[league.Bundesliga] = "https://vk.com/topic-54185875_37150957?post
 let managerListUrl = "https://vk.com/topic-54185875_37150957";
 let rulesUrl = "https://vk.com/wel9_online?w=page-54185875_44626803";
 let faqUrl = "https://vk.com/wel9_online?w=page-54185875_49853606";
+let tutorialUrl = "https://vk.com/page-54185875_44626921";
 
 function setUpLinks(leagueId) {
     document.getElementById("lmo-link").setAttribute("href", lmo.baseUrl);
     let coachListUrl = coachListLinks[leagueId];
-    document.getElementById("coaches-list-link").setAttribute("href", coachListUrl);
+    //document.getElementById("coaches-list-link").setAttribute("href", coachListUrl);
     document.getElementById("rules-link").setAttribute("href", rulesUrl);
     document.getElementById("faq-link").setAttribute("href", faqUrl);
+    document.getElementById("tutorial-link").setAttribute("href", tutorialUrl);
     let reportMatchUrl = matchTopicLinks[leagueId];
     document.getElementById("report-match-link").setAttribute("href", reportMatchUrl);
     let leagueTableUrl = lmo.getLeagueTableUrl(leagueId);
@@ -442,8 +444,9 @@ function applyManagerPageData(content) {
     for (let link of links) {
         let possibleClubName = link.previousSibling;
         try {
-            possibleClubName = possibleClubName.textContent.replace("-", "").replace("Ч","").replace("-","").trim();
+            possibleClubName = possibleClubName.textContent.replace("-", "").replace("Ч","").replace("-","").trim(); // TODO дефисы в середине названи€!!
             for (let opponentNameEl of fixtureOpponentNameElements) {
+                console.log(possibleClubName);
                 if (opponentNameEl.innerText.trim() == possibleClubName) {
                     let trow = opponentNameEl.parentElement.parentElement;
                     let contactManagerLinks = trow.getElementsByClassName('contact-manager-link');
@@ -653,8 +656,8 @@ function setUpGlobal(initial) {
 
     let tick = 0;
     let updateCompleted = false;
-    let maxUpdateCompletionChecks = 150;
-    let updateCompletionCheckInterval = 50;
+    let maxUpdateCompletionChecks = 100;
+    let updateCompletionCheckInterval = 100; // timeout = maxUpdateCompletionChecks * updateCompletionCheckInterval = 10 seconds; LMO sometimes responds slowly
     function scheduleUpdateCompletionCheck() {
         setTimeout(function () {
             if (updateCompleted) {
