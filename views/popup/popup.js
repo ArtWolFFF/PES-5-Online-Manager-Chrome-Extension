@@ -1,3 +1,15 @@
+/***
+DISCLAIMER
+
+This extension uses third-party resources that may contain copyrighted material the use of which has not always been specifically authorized by the copyright owner.
+The authors of this extension do not have any control of the aforementioned third-party resources and do not hold any legal responsibility for the content that these third-party resources may provide.
+All the data, such as match results and competition standings listed in this extension, is entirely fictional.
+This extension was never intended for any commercial or personal gain.
+Credits for wonderful icons go to iconfinder.com.
+
+***/
+
+
 /* DATA */
 
 /* League Manager Online data*/
