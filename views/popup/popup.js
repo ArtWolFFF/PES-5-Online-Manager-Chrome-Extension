@@ -1,4 +1,4 @@
-/***
+﻿/***
 DISCLAIMER
 
 This extension uses third-party resources that may contain copyrighted material the use of which has not always been specifically authorized by the copyright owner.
@@ -224,12 +224,12 @@ function applyLeagueTableInfo(leagueTableInfo) {
     let currentTeamPosition = leagueTableInfo.currentPosition;
     document.getElementsByClassName('club-position')[0].innerText = currentTeamPosition;
     let teamsInLeague = leagueTableInfo.standings.length;
-    let snippetDelta = 3; // ���������� ������ ���� � ���� ��������� �������, ������� ������������ � �������� �������
+    let snippetDelta = 3; // количество команд выше и ниже выбранной команды, которое показывается в сниппете таблицы
     let snippetStartIdx = Math.max(1, currentTeamPosition - snippetDelta);
     let snippetEndIdx = Math.min(teamsInLeague, currentTeamPosition + snippetDelta);
 
     let leagueTableContainer = document.querySelector('.tournament-table tbody');
-    leagueTableContainer.innerHTML = '<tr class="league-table-header-row"><td></td><td></td><td></td><td class="table-games-cell"><span class="table-games unobtrusive-header">\u0418</span></td><td><span class="table-points unobtrusive-header">\u041E</span></td></tr>';
+    leagueTableContainer.innerHTML = '<tr class="league-table-header-row"><td></td><td></td><td></td><td class="table-games-cell"><span class="table-games unobtrusive-header">И</span></td><td><span class="table-points unobtrusive-header">О</span></td></tr>';
 
     for (let i = snippetStartIdx; i <= snippetEndIdx; i++) {
         let team = leagueTableInfo.standings[i - 1];
@@ -385,7 +385,7 @@ function applyFixtures(fixtures) {
         fixtureNumberTd.className = "fixture-number-cell";
         let fixtureNumberSpan = document.createElement('div');
         fixtureNumberSpan.className = "fixture-number";
-        fixtureNumberSpan.innerText = "\u0422\u0443\u0440 " + fixture.fixtureId;
+        fixtureNumberSpan.innerText = "Тур " + fixture.fixtureId;
         fixtureNumberTd.appendChild(fixtureNumberSpan);
         row.appendChild(fixtureNumberTd);
 
@@ -417,7 +417,7 @@ function applyFixtures(fixtures) {
         let homeAwayTd = document.createElement('td');
         let homeAwaySpan = document.createElement('div');
         homeAwaySpan.className = "home-away";
-        homeAwaySpan.innerHTML = isHomeMatch ? "(\u0434)" : "(\u0433)";
+        homeAwaySpan.innerHTML = isHomeMatch ? "(д)" : "(г)";
         homeAwayTd.appendChild(homeAwaySpan);
         row.appendChild(homeAwayTd);
 
@@ -427,7 +427,7 @@ function applyFixtures(fixtures) {
         contactManagerBtn.className = "contact-manager-link disabled";        
         contactManagerBtn.target = "_blank";
         contactManagerBtn.href = "javascript:void(0);";
-        contactManagerBtn.title = "\u041D\u0430\u043F\u0438\u0441\u0430\u0442\u044C \u0442\u0440\u0435\u043D\u0435\u0440\u0443";
+        contactManagerBtn.title = "Написать тренеру";
         buttonTd.appendChild(contactManagerBtn);
     }
     row.appendChild(buttonTd);
@@ -456,9 +456,14 @@ function applyManagerPageData(content) {
     for (let link of links) {
         let possibleClubName = link.previousSibling;
         try {
-            possibleClubName = possibleClubName.textContent.replace("-", "").replace("�","").replace("-","").trim(); // TODO ������ � �������� ��������!!
+            // cut out all sorts of long dashes
+            possibleClubName = possibleClubName.textContent.replace(/\u2013|\u2014|\u2012|\u2015/g, "").trim();
+            if (possibleClubName.endsWith("-") || possibleClubName.endsWith("-")) {
+                // delete trailing hyphen/minus 
+                possibleClubName = possibleClubName.slice(0, possibleClubName.length - 1);
+                possibleClubName = possibleClubName.trim();
+            }
             for (let opponentNameEl of fixtureOpponentNameElements) {
-                console.log(possibleClubName);
                 if (opponentNameEl.innerText.trim() == possibleClubName) {
                     let trow = opponentNameEl.parentElement.parentElement;
                     let contactManagerLinks = trow.getElementsByClassName('contact-manager-link');
@@ -481,7 +486,13 @@ function applyManagerPageData(content) {
 
 function setUpManagersInfo() {
     fetch(managerListUrl)
-        .then(response => response.text())
+        .then(response => response.arrayBuffer())
+        .then(buffer => {
+            // VK returnes pages encoded in windows-1251
+            let decoder = new TextDecoder("windows-1251");
+            let text = decoder.decode(buffer);
+            return Promise.resolve(text);
+        })
         .then(applyManagerPageData)
         .catch(function (error) {
             console.error(error);
@@ -581,14 +592,14 @@ function setUpEventHandlers() {
         if (isFullCalendar) {
             // toggle nearest fixtures
             this.className = this.className.replace("full-calendar", "");
-            headerText.innerText = "\u0411\u043B\u0438\u0436\u0430\u0439\u0448\u0438\u0435 \u043C\u0430\u0442\u0447\u0438";
-            headerText.title = "\u041F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0438\u0442\u044C\u0441\u044F \u043D\u0430 \u043A\u0430\u043B\u0435\u043D\u0434\u0430\u0440\u044C";
+            headerText.innerText = "Ближайшие матчи";
+            headerText.title = "Переключиться на календарь";
             applyFixtures(nearestFixtures);
         } else {
             // toggle full calendar
             this.className += " full-calendar";
-            headerText.innerText = "\u041A\u0430\u043B\u0435\u043D\u0434\u0430\u0440\u044C";
-            headerText.title = "\u041F\u0435\u0440\u0435\u043A\u043B\u044E\u0447\u0438\u0442\u044C\u0441\u044F \u043D\u0430 \u0431\u043B\u0438\u0436\u0430\u0439\u0448\u0438\u0435 \u043C\u0430\u0442\u0447\u0438";
+            headerText.innerText = "Календарь";
+            headerText.title = "Переключиться на ближайшие матчи";
             applyFixtures(allFixtures);
         }
     });
@@ -683,7 +694,7 @@ function setUpGlobal(initial) {
                 tick++;
                 scheduleUpdateCompletionCheck();
             } else {
-                document.getElementsByTagName('body')[0].innerHTML = "\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438 \u0440\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u0438\u044F. \u0414\u043B\u044F \u043A\u043E\u0440\u0440\u0435\u043A\u0442\u043D\u043E\u0439 \u0440\u0430\u0431\u043E\u0442\u044B \u0442\u0440\u0435\u0431\u0443\u044E\u0442\u0441\u044F \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u0435 \u043A \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442\u0443 \u0438 \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u043E\u0441\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B " + lmo.baseUrl;
+                document.getElementsByTagName('body')[0].innerHTML = "Ошибка загрузки расширения. Для корректной работы требуются подключение к интернету и доступность страницы " + lmo.baseUrl;
                 showEverything();
             }
         }, updateCompletionCheckInterval);
