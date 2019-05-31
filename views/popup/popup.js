@@ -136,6 +136,11 @@ HTMLElement.prototype.show = function (toggleVisibility) {
         this.style.display = "block";
     }
 }
+
+function checkFetchResponseEncoding(response) {
+    console.log(response.headers.get('Content-Type'));
+    return response;
+}
 /* END UTILS */
 
 /* LINKS */
@@ -290,11 +295,13 @@ function applyLeagueTableInfo(leagueTableInfo) {
 function setUpLeagueTable(leagueId) {
     let lmoTableUrl = lmo.getLeagueTableUrl(leagueId);
     fetch(lmoTableUrl)
+        .then(checkFetchResponseEncoding)
         .then(response => response.text())
         .then(parseLeagueTablePage)
         .then(applyLeagueTableInfo)
         .catch(function (error) {
             console.error(error);
+            console.trace();
         });
 }
 /* END LEAGUE TABLE SNIPPET */
@@ -486,6 +493,7 @@ function applyManagerPageData(content) {
 
 function setUpManagersInfo() {
     fetch(managerListUrl)
+        .then(checkFetchResponseEncoding)
         .then(response => response.arrayBuffer())
         .then(buffer => {
             // VK returnes pages encoded in windows-1251
@@ -496,6 +504,7 @@ function setUpManagersInfo() {
         .then(applyManagerPageData)
         .catch(function (error) {
             console.error(error);
+            console.trace();
             loadState.managerContactsUpdated = true; // not a primary feature, so we report loading as finished regardless of the outcome
         });
 }
@@ -505,10 +514,12 @@ function setUpNearestFixtures(teamId, leagueId) {
     teamCalendarUrl.innerHTML = ''; // remove all current data
 
     fetch(teamCalendarUrl)
+        .then(checkFetchResponseEncoding)
         .then(response => response.text())
         .then(parseTeamCalendarPage)
         .then(applyNearestFixturesInfo)
         .catch(function (error) {
+            console.trace();
             console.error(error);
         });
 }
@@ -539,6 +550,7 @@ function setUpClubSelector() {
         /* Fetch and fill clubs list for each league */
         let clubsListUrl = lmo.getLeagueRosterUrl(leagueId);
         fetch(clubsListUrl)
+            .then(checkFetchResponseEncoding)
             .then(response => response.text())
             .then(function (content) {
                 let htmlDoc = parser.parseFromString(content, 'text/html');
@@ -562,6 +574,7 @@ function setUpClubSelector() {
                 Promise.resolve(true);
             })
             .catch(function (error) {
+                console.trace();
                 console.error(error);
             });
     }
