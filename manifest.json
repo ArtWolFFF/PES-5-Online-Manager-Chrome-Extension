@@ -16,8 +16,7 @@
     },
   "background": {
       "scripts": [
-		"scripts/background/background.js",
-		"scripts/background/backgroundPsd.js"
+		  "scripts/background/background.js"
 	  ],
       "persistent": false
   },
