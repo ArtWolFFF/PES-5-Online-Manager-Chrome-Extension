@@ -295,7 +295,6 @@ function applyLeagueTableInfo(leagueTableInfo) {
 function setUpLeagueTable(leagueId) {
     let lmoTableUrl = lmo.getLeagueTableUrl(leagueId);
     fetch(lmoTableUrl)
-        .then(checkFetchResponseEncoding)
         .then(response => response.text())
         .then(parseLeagueTablePage)
         .then(applyLeagueTableInfo)
@@ -493,7 +492,6 @@ function applyManagerPageData(content) {
 
 function setUpManagersInfo() {
     fetch(managerListUrl)
-        .then(checkFetchResponseEncoding)
         .then(response => response.arrayBuffer())
         .then(buffer => {
             // VK returnes pages encoded in windows-1251
@@ -514,7 +512,6 @@ function setUpNearestFixtures(teamId, leagueId) {
     teamCalendarUrl.innerHTML = ''; // remove all current data
 
     fetch(teamCalendarUrl)
-        .then(checkFetchResponseEncoding)
         .then(response => response.text())
         .then(parseTeamCalendarPage)
         .then(applyNearestFixturesInfo)
@@ -550,7 +547,6 @@ function setUpClubSelector() {
         /* Fetch and fill clubs list for each league */
         let clubsListUrl = lmo.getLeagueRosterUrl(leagueId);
         fetch(clubsListUrl)
-            .then(checkFetchResponseEncoding)
             .then(response => response.text())
             .then(function (content) {
                 let htmlDoc = parser.parseFromString(content, 'text/html');
