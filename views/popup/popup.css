@@ -316,3 +316,12 @@ label {
 .contact-manager-link.disabled {
     cursor: default;
 }
+
+.error-section {
+    display: none;
+}
+
+.error-description {
+    color: red;
+    font-size: 12px;
+}

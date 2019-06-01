@@ -176,6 +176,7 @@ function setUpLinks(leagueId) {
     document.getElementById("report-match-link").setAttribute("href", reportMatchUrl);
     let leagueTableUrl = lmo.getLeagueTableUrl(leagueId);
     document.getElementById("tournament-table-link").setAttribute("href", leagueTableUrl);
+    document.getElementsByClassName("error-description")[0].innerText = "Ошибка загрузки расширения. Для корректной работы требуются подключение к интернету и доступность страницы " + lmo.baseUrl + ". Если подключение к интернету присутствует, проверьте в настройках расширения, что доступ к указанной выше странице не ограничен.";
 
     loadState.linksUpdated = true;
 }
@@ -647,6 +648,7 @@ function setUpEventHandlers() {
 }
 /* END EVENT HANDLERS */
 
+/* PAGE STATE */
 function hideEverything() {
     document.getElementsByTagName('html')[0].style.overflow = "hidden";
     document.getElementsByTagName('body')[0].hide(false); // hide everything
@@ -655,6 +657,32 @@ function hideEverything() {
 function showEverything() {
     document.getElementsByTagName('html')[0].style.overflow = "visible";
     document.getElementsByTagName('body')[0].show(false); // show everything
+}
+
+function hideDynamicSections() {
+    //document.getElementsByTagName('html')[0].style.overflow = "hidden";
+    let sectionsToToggleVisibilityFor = document.querySelectorAll('section:not(.error-section):not(.links-container):not(.league-and-club-selection-container)');
+    for (let section of sectionsToToggleVisibilityFor)
+    {
+        section.hide(false);
+    }
+}
+
+function showDynamicSections() {
+    //document.getElementsByTagName('html')[0].style.overflow = "visible";
+    let sectionsToToggleVisibilityFor = document.querySelectorAll('section:not(.error-section):not(.links-container):not(.league-and-club-selection-container)');
+    for (let section of sectionsToToggleVisibilityFor)
+    {
+        section.show(false);
+    }
+}
+
+function showError() {
+    document.getElementsByClassName("error-section")[0].show();
+}
+
+function hideError() {
+    document.getElementsByClassName("error-section")[0].hide();
 }
 
 function toggleNoActiveClubState() {
@@ -674,6 +702,8 @@ function toggleSelectedClubState() {
     document.getElementById('header-logo').src = teamLogoUrl;
 }
 
+/* END PAGE STATE */
+
 function setUpGlobal(initial) {
 
     loadState.reset();
@@ -685,6 +715,7 @@ function setUpGlobal(initial) {
     }
 
     hideEverything(); // prevent flickering; once loadstate tells us that everything has updated properly, we'll show everything
+    console.log("hidden");
     setUpLinks(currentLeague);
 
     if (currentTeam != null && currentLeague != null && currentTeamId != null && teamLogoUrl != null) {
@@ -702,8 +733,8 @@ function setUpGlobal(initial) {
 
     let tick = 0;
     let updateCompleted = false;
-    let maxUpdateCompletionChecks = 100;
-    let updateCompletionCheckInterval = 100; // timeout = maxUpdateCompletionChecks * updateCompletionCheckInterval = 10 seconds; LMO sometimes responds slowly
+    let maxUpdateCompletionChecks = 70;
+    let updateCompletionCheckInterval = 100; // timeout = maxUpdateCompletionChecks * updateCompletionCheckInterval = 7 seconds; LMO sometimes responds slowly
     function scheduleUpdateCompletionCheck() {
         setTimeout(function () {
             if (updateCompleted) {
@@ -712,13 +743,17 @@ function setUpGlobal(initial) {
 
             if (loadState.allComponentsLoaded()) {
                 updateCompleted = true;
+                showDynamicSections();
                 showEverything();
+                hideError();
             } else if (tick < maxUpdateCompletionChecks) {
                 tick++;
                 scheduleUpdateCompletionCheck();
             } else {
-                document.getElementsByTagName('body')[0].innerHTML = "Ошибка загрузки расширения. Для корректной работы требуются подключение к интернету и доступность страницы " + lmo.baseUrl;
                 showEverything();
+                hideDynamicSections();
+                showError();
+                //document.getElementsByTagName('body')[0].innerHTML = "Ошибка загрузки расширения. Для корректной работы требуются подключение к интернету и доступность страницы " + lmo.baseUrl;                
             }
         }, updateCompletionCheckInterval);
         tick++;
