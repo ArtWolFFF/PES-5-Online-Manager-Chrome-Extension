@@ -35,6 +35,15 @@ let league = {
     Bundesliga: "bundesliga.l98"
 };
 
+let leagueNames = {
+};
+leagueNames[league.SerieA] = "Serie A";
+leagueNames[league.Ligue1] = "Ligue 1";
+leagueNames[league.LaLiga] = "La Liga";
+leagueNames[league.EuroLeague] = "EuroLeague";
+leagueNames[league.EPL] = "English Premier League";
+leagueNames[league.Bundesliga] = "Bundesliga";
+
 let teamsByLeague = {
 };
 teamsByLeague[league.SerieA] = [];
@@ -547,7 +556,7 @@ function setUpClubSelector() {
         let leagueId = league[currentLeagueIdx];
         
         option.value = leagueId;
-        option.innerText = currentLeagueIdx;
+        option.innerText = leagueNames[leagueId];
         leagueSelector.appendChild(option);
 
         /* Fetch and fill clubs list for each league */
