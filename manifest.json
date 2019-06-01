@@ -1,6 +1,6 @@
 {
   "name": "PES 5 Manager Online",
-  "version": "0.1",
+  "version": "0.91",
   "description": "Расширение для участников проекта PES 5 Online - https://vk.com/wel9_online?w=wall-54185875_112808",
   "manifest_version": 2,
   "permissions": [    
@@ -20,12 +20,6 @@
 	  ],
       "persistent": false
   },
-  "content_scripts": [
-  {
-      "matches": ["https://pesstatsdatabase.com/PSD/Player_old2011.php*"],
-      "js": ["scripts/content/psdPlayerPage.js"]
-  }
-  ],
   "browser_action": {
       "default_popup": "views/popup/popup.html"
   }
