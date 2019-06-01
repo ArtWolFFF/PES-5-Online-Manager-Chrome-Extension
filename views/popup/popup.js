@@ -44,10 +44,10 @@ teamsByLeague[league.EuroLeague] = [];
 teamsByLeague[league.EPL] = [];
 teamsByLeague[league.Bundesliga] = [];
 
-let currentLeague = league.SerieA;
-let currentTeam = "Cagliari Calcio";
-let currentTeamId = "8";
-let teamLogoUrl = "http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png";
+let currentLeague = null;//league.SerieA;
+let currentTeam = null;//"Cagliari Calcio";
+let currentTeamId = null;//"8";
+let teamLogoUrl = null;//"http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png";
 
 globalData = {
     getCurrentTeam: function () {
@@ -702,6 +702,20 @@ function toggleSelectedClubState() {
     document.getElementById('header-logo').src = teamLogoUrl;
 }
 
+function updateCurrentClubState() {
+    if (currentTeam != null && currentLeague != null && currentTeamId != null && teamLogoUrl != null) {
+        toggleSelectedClubState();
+        setUpLeagueTable(currentLeague);
+        setUpNearestFixtures(currentTeamId, currentLeague);
+    } else {
+        // делаем вид, что всё загрузилось
+        loadState.leagueTableUpdated = true;
+        loadState.nearestFixturesUpdated = true;
+        loadState.managerContactsUpdated = true;
+        toggleNoActiveClubState();
+    }
+}
+
 /* END PAGE STATE */
 
 function setUpGlobal(initial) {
@@ -714,22 +728,10 @@ function setUpGlobal(initial) {
         setUpEventHandlers();
     }
 
-    hideEverything(); // prevent flickering; once loadstate tells us that everything has updated properly, we'll show everything
-    console.log("hidden");
+    hideEverything(); // prevent flickering; once loadstate tells us that everything has updated properly, we'll show everything    
     setUpLinks(currentLeague);
 
-    if (currentTeam != null && currentLeague != null && currentTeamId != null && teamLogoUrl != null) {
-        toggleSelectedClubState();
-        setUpLeagueTable(currentLeague);
-        setUpNearestFixtures(currentTeamId, currentLeague);
-    } else {
-        // делаем вид, что всё загрузилось
-        loadState.leagueTableUpdated = true;
-        loadState.nearestFixturesUpdated = true;
-        loadState.managerContactsUpdated = true;
-        toggleNoActiveClubState();
-
-    }
+    updateCurrentClubState();
 
     let tick = 0;
     let updateCompleted = false;
@@ -744,6 +746,7 @@ function setUpGlobal(initial) {
             if (loadState.allComponentsLoaded()) {
                 updateCompleted = true;
                 showDynamicSections();
+                updateCurrentClubState();
                 showEverything();
                 hideError();
             } else if (tick < maxUpdateCompletionChecks) {
