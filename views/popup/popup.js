@@ -675,16 +675,21 @@ function setUpGlobal(initial) {
         setUpEventHandlers();
     }
 
-    if (currentTeam != null && currentLeague != null) {
-        toggleSelectedClubState();
-    } else {
-        toggleNoActiveClubState();
-    }
-
     hideEverything(); // prevent flickering; once loadstate tells us that everything has updated properly, we'll show everything
     setUpLinks(currentLeague);
-    setUpLeagueTable(currentLeague);
-    setUpNearestFixtures(currentTeamId, currentLeague);
+
+    if (currentTeam != null && currentLeague != null && currentTeamId != null && teamLogoUrl != null) {
+        toggleSelectedClubState();
+        setUpLeagueTable(currentLeague);
+        setUpNearestFixtures(currentTeamId, currentLeague);
+    } else {
+        // делаем вид, что всё загрузилось
+        loadState.leagueTableUpdated = true;
+        loadState.nearestFixturesUpdated = true;
+        loadState.managerContactsUpdated = true;
+        toggleNoActiveClubState();
+
+    }
 
     let tick = 0;
     let updateCompleted = false;
