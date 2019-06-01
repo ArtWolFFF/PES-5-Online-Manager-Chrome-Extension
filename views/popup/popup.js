@@ -345,7 +345,9 @@ function parseTeamCalendarPage(content) {
     return Promise.resolve(fixtures);
 }
 
-function applyNearestFixturesInfo(fixtures) {
+function applyFixturesInfo(fixtures) {
+    // apply fixtures for full calendar
+    applyFixtures(fixtures, true);
 
     let fixturesDelta = 3;
     let concludedFixtures = fixtures
@@ -364,11 +366,14 @@ function applyNearestFixturesInfo(fixtures) {
     snippetFixtures = snippetFixtures.concat(upcomingFixtures);
 
     nearestFixtures = snippetFixtures;  // saving globally for later use
+    // apply "nearest fixtures"
     return applyFixtures(snippetFixtures);
 }
 
-function applyFixtures(fixtures) {
-    let fixturesContainer = document.querySelector('.nearest-fixtures-table tbody');
+function applyFixtures(fixtures, applyAllFixtures) {
+    let fixturesContainer = !applyAllFixtures
+        ? document.querySelector('.nearest-fixtures-table tbody')
+        : document.querySelector('.full-calendar-table tbody');
     fixturesContainer.innerHTML = ''; // remove all current data
 
     for (let fixture of fixtures) {
@@ -514,7 +519,7 @@ function setUpNearestFixtures(teamId, leagueId) {
     fetch(teamCalendarUrl)
         .then(response => response.text())
         .then(parseTeamCalendarPage)
-        .then(applyNearestFixturesInfo)
+        .then(applyFixturesInfo)
         .catch(function (error) {
             console.trace();
             console.error(error);
@@ -598,18 +603,22 @@ function setUpEventHandlers() {
     document.getElementsByClassName('nearest-fixtures-header')[0].addEventListener("click", function (event) {
         let isFullCalendar = this.className.indexOf("full-calendar") > -1;
         let headerText = document.getElementsByClassName("nearest-fixtures-header-text")[0];
+        let nearestFixturesTable = document.getElementsByClassName("nearest-fixtures-table")[0];
+        let allFixturesTable = document.getElementsByClassName("full-calendar-table")[0];
         if (isFullCalendar) {
             // toggle nearest fixtures
             this.className = this.className.replace("full-calendar", "");
             headerText.innerText = "Ближайшие матчи";
             headerText.title = "Переключиться на календарь";
-            applyFixtures(nearestFixtures);
+            nearestFixturesTable.show();
+            allFixturesTable.hide();
         } else {
             // toggle full calendar
             this.className += " full-calendar";
             headerText.innerText = "Календарь";
             headerText.title = "Переключиться на ближайшие матчи";
-            applyFixtures(allFixtures);
+            nearestFixturesTable.hide();
+            allFixturesTable.show();
         }
     });
     
