@@ -9,6 +9,7 @@ Credits for wonderful icons go to iconfinder.com.
 
 ***/
 
+'use strict';
 
 /* DATA */
 
@@ -58,7 +59,7 @@ let currentTeam = null;//"Cagliari Calcio";
 let currentTeamId = null;//"8";
 let teamLogoUrl = null;//"http://lmo.online.gamma.mtw.ru/img/teams/small/Cagliari%20Calcio.png";
 
-globalData = {
+let globalData = {
     getCurrentTeam: function () {
         return currentTeam;
     },
@@ -524,7 +525,8 @@ function setUpManagersInfo() {
 
 function setUpNearestFixtures(teamId, leagueId) {
     let teamCalendarUrl = lmo.getTeamCalendarUrl(leagueId, teamId);
-    teamCalendarUrl.innerHTML = ''; // remove all current data
+    document.querySelector('.nearest-fixtures-table tbody')
+        .innerHTML = ''; // remove all current data
 
     fetch(teamCalendarUrl)
         .then(response => response.text())
