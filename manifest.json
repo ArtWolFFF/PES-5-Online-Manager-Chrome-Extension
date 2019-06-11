@@ -1,7 +1,7 @@
 {
-  "name": "PES 5 Manager Online",
-  "version": "0.91",
-  "description": "Расширение для участников проекта PES 5 Online - https://vk.com/wel9_online?w=wall-54185875_112808",
+  "name": "Result Viewer For Pes 5 Online Project",
+  "version": "0.92",
+  "description": "Расширение позволяет видеть результаты соревнований участников сообщества 'PES 5 / WE 9 Online': https://vk.com/wel9_online",
   "manifest_version": 2,
   "permissions": [    
     "storage",
