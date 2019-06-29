@@ -164,6 +164,7 @@ table {
 .fixture-result-container {
     text-align: center;
     font-weight: 700;
+    white-space: nowrap;
 }
 
 .home-away {

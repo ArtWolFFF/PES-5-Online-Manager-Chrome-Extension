@@ -96,6 +96,12 @@ let globalData = {
 
 let nearestFixtures = [];
 let allFixtures = [];
+let Outcome = {
+    Win: "win",
+    Draw: "draw",
+    Loss: "loss"
+};
+
 
 var parser = new DOMParser();
 
@@ -151,6 +157,11 @@ function checkFetchResponseEncoding(response) {
     console.log(response.headers.get('Content-Type'));
     return response;
 }
+
+function countInstances(str, word) {
+    return str.split(word).length - 1;
+}
+
 /* END UTILS */
 
 /* LINKS */
@@ -338,15 +349,30 @@ function parseTeamCalendarPage(content) {
 
     for (let row of rows) {
         let isPlayed = row.children[6].innerText != "_";
+        let homeTeam = row.children[2].innerText.trim();
+        let awayTeam = row.children[4].innerText.trim();
+        let technicalDefeatInfoContainer = row.getElementsByClassName("popup");
+        let isTechnicalDefeat = technicalDefeatInfoContainer.length > 0;
+        let technicalWinner = null;
+        if (isTechnicalDefeat) {
+            let popupHtml = technicalDefeatInfoContainer[0].innerHTML;
+            if (countInstances(popupHtml, homeTeam) === 2) {
+                technicalWinner = homeTeam;  
+            } else if (countInstances(popupHtml, awayTeam) === 2) {
+                technicalWinner = awayTeam;
+            }
+        }
         let fixture = {
             fixtureId: parseInt(row.children[0].innerText.trim()),
-            homeTeam: row.children[2].innerText.trim(),
+            homeTeam: homeTeam,
             homeTeamLogoUrl: row.children[2].getElementsByTagName('img')[0].src,
-            awayTeam: row.children[4].innerText.trim(),
+            awayTeam: awayTeam,
             awayTeamLogoUrl: row.children[4].getElementsByTagName('img')[0].src,
             homeTeamGoals: isPlayed ? parseInt(row.children[6].innerText) : 0,
             awayTeamGoals: isPlayed ? parseInt(row.children[8].innerText) : 0,
-            concluded: isPlayed
+            concluded: isPlayed || isTechnicalDefeat,
+            isTechnicalDefeat: isTechnicalDefeat,
+            technicalWinner: technicalWinner
         };
 
         fixtures.push(fixture);
@@ -398,8 +424,20 @@ function applyFixtures(fixtures, applyAllFixtures) {
             ? !isHomeMatch ? fixture.homeTeamGoals : fixture.awayTeamGoals
             : "-";
         let outcome = myGoals > opponentGoals
-            ? "win"
-            : myGoals < opponentGoals ? "loss" : "draw";
+            ? Outcome.Win
+            : myGoals < opponentGoals ? Outcome.Loss : Outcome.Draw;
+
+        if (fixture.isTechnicalDefeat) {
+            if (fixture.technicalWinner === currentTeam) {
+                outcome = Outcome.Win;
+                myGoals = "+";
+                opponentGoals = "\u2212";
+            } else {
+                outcome = Outcome.Loss;
+                opponentGoals = "+";
+                myGoals = "\u2212";
+            }            
+        }
 
         let row = document.createElement('tr');
 
