@@ -326,3 +326,7 @@ label {
     color: red;
     font-size: 12px;
 }
+
+#reset-btn {
+    width: 150px;
+}

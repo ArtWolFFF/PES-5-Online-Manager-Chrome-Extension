@@ -197,7 +197,7 @@ function setUpLinks(leagueId) {
     document.getElementById("report-match-link").setAttribute("href", reportMatchUrl);
     let leagueTableUrl = lmo.getLeagueTableUrl(leagueId);
     document.getElementById("tournament-table-link").setAttribute("href", leagueTableUrl);
-    document.getElementsByClassName("error-description")[0].innerText = "Ошибка загрузки расширения. Для корректной работы требуются подключение к интернету и доступность страницы " + lmo.baseUrl + ". Если подключение к интернету присутствует, проверьте в настройках расширения, что доступ к указанной выше странице не ограничен.";
+    document.getElementsByClassName("error-description")[0].innerText = "Ошибка загрузки расширения. Для корректной работы требуются подключение к интернету и доступность страницы " + lmo.baseUrl + ". Если подключение к интернету присутствует, убедитесь, что доступ к указанной выше странице не ограничен в настройках расширения.";
 
     loadState.linksUpdated = true;
 }
@@ -693,6 +693,10 @@ function setUpEventHandlers() {
         //globalData.setCurrentLeague(null);
         //globalData.setCurrentTeamId(null);
         //globalData.setCurrentLogoUrl(null);
+    });
+
+    document.getElementById('reset-btn').addEventListener("click", function (event) {
+        location.reload();
     });
 }
 /* END EVENT HANDLERS */
