@@ -33,6 +33,7 @@ function initialize() {
 			badOption.value = condition.bad;
 			badOption.innerText = "Poor";
 			badOption.style.color = "blue";
+			badOption.style.fontWeight = "bold";
 			let normalOption = document.createElement("option");
 			normalOption.value = condition.normal;
 			normalOption.innerText = "Normal →";
