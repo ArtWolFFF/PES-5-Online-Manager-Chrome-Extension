@@ -23,6 +23,8 @@ function initialize() {
 			/* found first skill name text element */
 			prevSibling = prevSibling.previousSibling;
 			let br = document.createElement("br");
+			
+			/* Condition selector elements */
 			let conditionSelector = document.createElement("select");
 			let abysmalOption = document.createElement("option");
 			abysmalOption.value = condition.abysmal;
@@ -33,6 +35,7 @@ function initialize() {
 			badOption.value = condition.bad;
 			badOption.innerText = "Poor";
 			badOption.style.color = "blue";
+			badOption.style.fontWeight = "bold";
 			let normalOption = document.createElement("option");
 			normalOption.value = condition.normal;
 			normalOption.innerText = "Normal →";
@@ -57,11 +60,29 @@ function initialize() {
 			let selectorText = document.createElement("span");
 			selectorText.innerText = "Condition: ";
 			
+			let br3 = document.createElement("br");
 			prevSibling.parentElement.insertBefore(br, prevSibling);
+			prevSibling.parentElement.insertBefore(br3, prevSibling);
 			prevSibling.parentElement.insertBefore(conditionSelector, prevSibling);			
 			prevSibling.parentElement.insertBefore(selectorText, conditionSelector);
 			prevSibling.parentElement.insertBefore(br, conditionSelector);
 			prevSibling.parentElement.insertBefore(br, prevSibling);
+			
+			/* Salary elements */
+			let salaryText = document.createElement("span");
+			salaryText.innerText = "Зарплата на проекте: ";
+			let salaryValueText = document.createElement("b");
+			salaryValueText.className = "salary-value";
+			salaryValueText.innerText = "-";
+			
+			let br2 = document.createElement("br");
+			
+			prevSibling.parentElement.insertBefore(br2, conditionSelector);	
+			prevSibling.parentElement.insertBefore(br2, prevSibling);				
+			prevSibling.parentElement.insertBefore(salaryText, prevSibling);
+			prevSibling.parentElement.insertBefore(salaryValueText, prevSibling);	
+			prevSibling.parentElement.insertBefore(br2, salaryValueText);
+			prevSibling.parentElement.insertBefore(br2, prevSibling);
 			
 			conditionSelector.onchange = function(e) {
 				applyCondition(parseInt(e.target.value));
@@ -100,6 +121,9 @@ player.skills.Aggression = parseInt(skillsContainer[startIdx + 22].innerHTML);
 player.skills.Mentality = parseInt(skillsContainer[startIdx + 23].innerHTML);
 player.skills.KeeperSkills = parseInt(skillsContainer[startIdx + 24].innerHTML);
 player.skills.Teamwork = parseInt(skillsContainer[startIdx + 25].innerHTML);
+
+var salary = calculateSalary(player);
+document.getElementsByClassName("salary-value")[0].innerText = salary;
 
 
 function getSkillsByCondition(condition) {
@@ -239,6 +263,168 @@ function applyCondition(condition) {
 	skillsContainer[startIdx + 24].innerHTML = modifiedSkills.KeeperSkills;
 	skillsContainer[startIdx + 25].innerHTML = modifiedSkills.Teamwork;	
 	updateColors();
+}
+
+function calculateSalary(player) {
+	let skillSumFactors	= {
+		1900: 0.6,
+		2100: 0.6,		
+		2200: 0.8,
+		2300: 0.8,
+		2350: 0.8,
+		2400: 1,
+		2450: 1,
+		2550: 1,
+		2650: 1.1,
+		2700: 1.2,
+		2750: 1.2,
+		2850: 1.2,
+		2955: 1.2,
+		3050: 1.4,
+		3150: 2,
+		3250: 2,
+		3300: 2,
+		3350: 2,
+		3750: 2.3,
+		3800: 1.9
+	};
+	
+	function getEffectiveSkillSum(player) {
+		let commonSkillsFactor = {
+			50:	0.0,
+			80:	1.0,
+			84:	1.5,
+			87:	2.0,
+			90:	1.5,
+			94:	2.0,
+			99:	3.0
+		};
+		
+		let defenceSkillFactor = {
+			50:	0.0,
+			80:	1.0,
+			84:	2.5,
+			87:	4.0,
+			90:	4.0,
+			94:	5.0,
+			99:	6.0
+		};
+		
+		let keeperSkillsFactor = {
+			50:	0.0,
+			80:	1.0,
+			84:	5.0,
+			87:	5.0,
+			90:	5.0,
+			94:	5.0,
+			99:	5.0
+		};
+		
+		let passStaminaMentalTeamworkFactor = {
+			50:	0.0,
+			80:	1.0,
+			84:	1.0,
+			87: 1.0,
+			90:	1.2,
+			94:	1.2,
+			99:	1.2
+		};
+		
+		let speedAgilityFactor = {
+			50:	0.0,
+			80:	1.0,
+			84:	1.3,
+			87:	1.5,
+			90:	2.5,
+			94:	2.4,
+			99:	3.0
+		}
+		
+		let techniqueFactor = {
+			50:	0.0,
+			80:	1.0,
+			84:	1.1,
+			87:	1.3,
+			90:	1.5,
+			94:	1.8,
+			99:	2.0
+		}
+		
+		let shotAccuracyAndTechniqueFactor = {
+			50:	0.0,
+			80:	1.0,
+			84:	1.2,
+			87:	1.3,
+			90:	1.5,
+			94:	2.0,
+			99:	2.5
+		}
+		
+		let balanceAndShotPowerFactor = {
+			50:	0.0,
+			80:	1.0,
+			84:	2.0,
+			87:	3.0,
+			90:	3.0,
+			94:	4.0,
+			99:	6.0
+		}
+		
+		function calculateEffectiveSkillValue(skillValue, factors) {
+			let appliedFactor = 0.0;
+			let takeNextFactor = false;
+			for (let factor in factors) {
+				if (takeNextFactor) {
+					appliedFactor = factors[factor];
+				}
+				takeNextFactor = skillValue >= factor;
+			}
+			return skillValue * appliedFactor;
+		}
+		
+		var effectiveSkillSum =
+			calculateEffectiveSkillValue(player.skills.Attack, commonSkillsFactor)
+			+ calculateEffectiveSkillValue(player.skills.Defence, defenceSkillFactor)
+			+ calculateEffectiveSkillValue(player.skills.Balance, balanceAndShotPowerFactor)
+			+ calculateEffectiveSkillValue(player.skills.Stamina, passStaminaMentalTeamworkFactor)
+			+ calculateEffectiveSkillValue(player.skills.TopSpeed, speedAgilityFactor)
+			+ calculateEffectiveSkillValue(player.skills.Acceleration, speedAgilityFactor) 
+			+ calculateEffectiveSkillValue(player.skills.Response, commonSkillsFactor)
+			+ calculateEffectiveSkillValue(player.skills.Agility, speedAgilityFactor)
+			+ calculateEffectiveSkillValue(player.skills.DribbleAccuracy, techniqueFactor)
+			+ calculateEffectiveSkillValue(player.skills.DribbleSpeed, speedAgilityFactor)
+			+ calculateEffectiveSkillValue(player.skills.ShortPassAccuracy, passStaminaMentalTeamworkFactor)
+			+ calculateEffectiveSkillValue(player.skills.ShortPassSpeed, passStaminaMentalTeamworkFactor)
+			+ calculateEffectiveSkillValue(player.skills.LongPassAccuracy, passStaminaMentalTeamworkFactor)
+			+ calculateEffectiveSkillValue(player.skills.LongPassSpeed, passStaminaMentalTeamworkFactor)
+			+ calculateEffectiveSkillValue(player.skills.ShotAccuracy, shotAccuracyAndTechniqueFactor)
+			+ calculateEffectiveSkillValue(player.skills.ShotPower, balanceAndShotPowerFactor)			
+			+ calculateEffectiveSkillValue(player.skills.ShotTechnique, shotAccuracyAndTechniqueFactor)
+			+ calculateEffectiveSkillValue(player.skills.FreeKickAccuracy, commonSkillsFactor) // check
+			+ calculateEffectiveSkillValue(player.skills.Curling, commonSkillsFactor) // check
+			+ calculateEffectiveSkillValue(player.skills.Header, commonSkillsFactor)
+			+ calculateEffectiveSkillValue(player.skills.Jump, commonSkillsFactor)
+			+ calculateEffectiveSkillValue(player.skills.Technique, techniqueFactor)
+			+ calculateEffectiveSkillValue(player.skills.Aggression, passStaminaMentalTeamworkFactor)
+			+ calculateEffectiveSkillValue(player.skills.Mentality, passStaminaMentalTeamworkFactor)
+			+ calculateEffectiveSkillValue(player.skills.KeeperSkills, keeperSkillsFactor)
+			+ calculateEffectiveSkillValue(player.skills.Teamwork, passStaminaMentalTeamworkFactor);
+			
+		return effectiveSkillSum;
+	}
+	
+	let effectiveSkillSum = getEffectiveSkillSum(player);	
+	let appliedFactor = 0.6;
+	let takeNextFactor = false;
+	for (let skillSum in skillSumFactors) {
+		if (takeNextFactor) {		
+			appliedFactor = skillSumFactors[skillSum];
+		}
+		takeNextFactor = effectiveSkillSum >= skillSum;
+	}
+	let effectiveSalary = effectiveSkillSum * appliedFactor;	
+	let roundedSalary = Math.round(effectiveSalary / 100) * 100;
+	return roundedSalary;
 }
 
 })();
