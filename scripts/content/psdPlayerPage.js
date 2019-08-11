@@ -57,6 +57,7 @@ function initialize() {
 			conditionSelector.appendChild(normalOption);
 			conditionSelector.appendChild(badOption);
 			conditionSelector.appendChild(abysmalOption);
+			conditionSelector.style.marginBottom = "4px";
 			let selectorText = document.createElement("span");
 			selectorText.innerText = "Condition: ";
 			
@@ -83,6 +84,14 @@ function initialize() {
 			prevSibling.parentElement.insertBefore(salaryValueText, prevSibling);	
 			prevSibling.parentElement.insertBefore(br2, salaryValueText);
 			prevSibling.parentElement.insertBefore(br2, prevSibling);
+			
+			let br4 = document.createElement("br");
+			let salaryHint = document.createElement("span");
+			salaryHint.className = "salary-hint";
+			salaryHint.innerHTML = "Внимание! Зарплата рассчитана исключительно на основе значений атрибутов на этой странице.";
+			salaryHint.style.fontSize = "10px";
+			prevSibling.parentElement.insertBefore(salaryHint, prevSibling);
+			prevSibling.parentElement.insertBefore(br4, prevSibling);
 			
 			conditionSelector.onchange = function(e) {
 				applyCondition(parseInt(e.target.value));
