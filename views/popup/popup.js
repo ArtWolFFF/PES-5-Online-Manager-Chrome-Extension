@@ -28,12 +28,12 @@ let lmo = {
 };
 
 let league = {
-    SerieA: "seriea.l98",
-    Ligue1: "ligue1.l98",
-    LaLiga: "example.l98",
-    EuroLeague: "euroleague.l98",
-    EPL: "epl.l98",
-    Bundesliga: "bundesliga.l98"
+    SerieA: "seriea6.l98",
+    Ligue1: "ligue16.l98",
+    LaLiga: "laliga6.l98",
+    EuroLeague: "euro6.l98",
+    EPL: "epl6.l98",
+    Bundesliga: "bundes6.l98"
 };
 
 let leagueNames = {
