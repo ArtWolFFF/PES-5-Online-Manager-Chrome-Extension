@@ -346,11 +346,12 @@ function parseTeamCalendarPage(content) {
     ];
     let htmlDoc = parser.parseFromString(content, 'text/html');
     let rows = htmlDoc.querySelectorAll('.lmoInner tr');
-
+	let rowContentOffset = 4;
+	
     for (let row of rows) {
-        let isPlayed = row.children[6].innerText != "_";
-        let homeTeam = row.children[2].innerText.trim();
-        let awayTeam = row.children[4].innerText.trim();
+        let isPlayed = row.children[rowContentOffset + 4].innerText != "_";
+        let homeTeam = row.children[rowContentOffset].innerText.trim();
+        let awayTeam = row.children[rowContentOffset + 2].innerText.trim();
         let technicalDefeatInfoContainer = row.getElementsByClassName("popup");
         let isTechnicalDefeat = technicalDefeatInfoContainer.length > 0;
         let technicalWinner = null;
@@ -365,11 +366,11 @@ function parseTeamCalendarPage(content) {
         let fixture = {
             fixtureId: parseInt(row.children[0].innerText.trim()),
             homeTeam: homeTeam,
-            homeTeamLogoUrl: row.children[2].getElementsByTagName('img')[0].src,
+            homeTeamLogoUrl: row.children[rowContentOffset].getElementsByTagName('img')[0].src,
             awayTeam: awayTeam,
-            awayTeamLogoUrl: row.children[4].getElementsByTagName('img')[0].src,
-            homeTeamGoals: isPlayed ? parseInt(row.children[6].innerText) : 0,
-            awayTeamGoals: isPlayed ? parseInt(row.children[8].innerText) : 0,
+            awayTeamLogoUrl: row.children[rowContentOffset + 2].getElementsByTagName('img')[0].src,
+            homeTeamGoals: isPlayed ? parseInt(row.children[rowContentOffset + 4].innerText) : 0,
+            awayTeamGoals: isPlayed ? parseInt(row.children[rowContentOffset + 6].innerText) : 0,
             concluded: isPlayed || isTechnicalDefeat,
             isTechnicalDefeat: isTechnicalDefeat,
             technicalWinner: technicalWinner
