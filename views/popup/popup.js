@@ -166,12 +166,12 @@ function countInstances(str, word) {
 
 /* LINKS */
 let matchTopicLinks = {};
-matchTopicLinks[league.SerieA] = "https://vk.com/topic-54185875_40077151";
-matchTopicLinks[league.Ligue1] = "https://vk.com/topic-54185875_40077984";
-matchTopicLinks[league.LaLiga] = "https://vk.com/topic-54185875_40077917";
-matchTopicLinks[league.EuroLeague] = "https://vk.com/topic-54185875_40079447";
-matchTopicLinks[league.EPL] = "https://vk.com/topic-54185875_40077880";
-matchTopicLinks[league.Bundesliga] = "https://vk.com/topic-54185875_40075989";
+matchTopicLinks[league.SerieA] = "https://vk.com/topic-54185875_40364548";
+matchTopicLinks[league.Ligue1] = "https://vk.com/topic-54185875_40364546";
+matchTopicLinks[league.LaLiga] = "https://vk.com/topic-54185875_40364553";
+matchTopicLinks[league.EuroLeague] = "https://vk.com/topic-54185875_40367517";
+matchTopicLinks[league.EPL] = "https://vk.com/topic-54185875_40367587";
+matchTopicLinks[league.Bundesliga] = "https://vk.com/topic-54185875_40363734";
 
 let coachListLinks = {};
 coachListLinks[league.SerieA] = "https://vk.com/topic-54185875_37150957?post=87359";
