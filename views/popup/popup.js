@@ -28,12 +28,12 @@ let lmo = {
 };
 
 let league = {
-    SerieA: "seriea6.l98",
-    Ligue1: "ligue16.l98",
-    LaLiga: "laliga6.l98",
-    EuroLeague: "euro6.l98",
-    EPL: "epl6.l98",
-    Bundesliga: "bundes6.l98"
+    SerieA: "seriea7.l98",
+    Ligue1: "ligue17.l98",
+    LaLiga: "laliga7.l98",
+    EuroLeague: "euro7.l98",
+    EPL: "epl7.l98",
+    Bundesliga: "bundes7.l98"
 };
 
 let leagueNames = {
@@ -166,12 +166,12 @@ function countInstances(str, word) {
 
 /* LINKS */
 let matchTopicLinks = {};
-matchTopicLinks[league.SerieA] = "https://vk.com/topic-54185875_40364548";
-matchTopicLinks[league.Ligue1] = "https://vk.com/topic-54185875_40364546";
-matchTopicLinks[league.LaLiga] = "https://vk.com/topic-54185875_40364553";
-matchTopicLinks[league.EuroLeague] = "https://vk.com/topic-54185875_40367517";
-matchTopicLinks[league.EPL] = "https://vk.com/topic-54185875_40367587";
-matchTopicLinks[league.Bundesliga] = "https://vk.com/topic-54185875_40363734";
+matchTopicLinks[league.SerieA] = "https://vk.com/topic-54185875_40744413";
+matchTopicLinks[league.Ligue1] = "https://vk.com/topic-54185875_40744550";
+matchTopicLinks[league.LaLiga] = "https://vk.com/topic-54185875_40743387";
+matchTopicLinks[league.EuroLeague] = "https://vk.com/topic-54185875_40742481";
+matchTopicLinks[league.EPL] = "https://vk.com/topic-54185875_40743427";
+matchTopicLinks[league.Bundesliga] = "https://vk.com/topic-54185875_40739941";
 
 let coachListLinks = {};
 coachListLinks[league.SerieA] = "https://vk.com/topic-54185875_37150957?post=87359";
