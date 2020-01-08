@@ -821,10 +821,18 @@ function setUpGlobal(initial) {
 
 function initializeFromSync(callback) {
     chrome.storage.sync.get(null, function (storage) {
-        currentLeague = storage.currentLeague;
-        currentTeam = storage.currentTeam;
-        currentTeamId = storage.currentTeamId;
-        teamLogoUrl = storage.teamLogoUrl;
+		let isActiveLeague = false;
+		for (let i in league) {			
+			if (storage.currentLeague === league[i])
+				isActiveLeague = true;
+		}
+		if (isActiveLeague) {
+			// only initialize from storage.sync if the data is still relevant
+			currentLeague = storage.currentLeague;
+			currentTeam = storage.currentTeam;
+			currentTeamId = storage.currentTeamId;
+			teamLogoUrl = storage.teamLogoUrl;
+		} 
         callback();
     })
 }
