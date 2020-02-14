@@ -352,17 +352,23 @@ function parseTeamCalendarPage(content) {
         let isPlayed = row.children[rowContentOffset + 4].innerText != "_";
         let homeTeam = row.children[rowContentOffset].innerText.trim();
         let awayTeam = row.children[rowContentOffset + 2].innerText.trim();
-        let technicalDefeatInfoContainer = row.getElementsByClassName("popup");
-        let isTechnicalDefeat = technicalDefeatInfoContainer.length > 0;
+        let additionalInfoContainer = row.getElementsByClassName("popup");
+        let popupHtml = additionalInfoContainer.length > 0 ? additionalInfoContainer[0].innerHTML : '';
+        let isTechnicalDefeat = popupHtml.toLowerCase().includes('round table decision');
         let technicalWinner = null;
         if (isTechnicalDefeat) {
-            let popupHtml = technicalDefeatInfoContainer[0].innerHTML;
             if (countInstances(popupHtml, homeTeam) === 2) {
                 technicalWinner = homeTeam;  
             } else if (countInstances(popupHtml, awayTeam) === 2) {
                 technicalWinner = awayTeam;
             }
         }
+		let hasMatchReport = popupHtml.toLowerCase().includes('match report');
+		let matchReportLink = null;
+		if (hasMatchReport) {
+			let sublinks = row.getElementsByTagName("a");
+			matchReportLink = sublinks[sublinks.length - 1].href;			
+		}
         let fixture = {
             fixtureId: parseInt(row.children[0].innerText.trim()),
             homeTeam: homeTeam,
@@ -373,7 +379,8 @@ function parseTeamCalendarPage(content) {
             awayTeamGoals: isPlayed ? parseInt(row.children[rowContentOffset + 6].innerText) : 0,
             concluded: isPlayed || isTechnicalDefeat,
             isTechnicalDefeat: isTechnicalDefeat,
-            technicalWinner: technicalWinner
+            technicalWinner: technicalWinner,
+			matchReportLink: matchReportLink
         };
 
         fixtures.push(fixture);
@@ -471,7 +478,8 @@ function applyFixtures(fixtures, applyAllFixtures) {
         outcomeTd.className = "fixture-result-container";
         let outcomeSpan = document.createElement('div');
         outcomeSpan.className = outcome;
-        outcomeSpan.innerText = `${myGoals}:${opponentGoals}`;
+		let score = `${myGoals}:${opponentGoals}`;
+        outcomeSpan.innerHTML = fixture.matchReportLink == null ? score : `<a class='match-report-link' href='${fixture.matchReportLink}' target='_blank'>${score}</a>`;//score;
         outcomeTd.appendChild(outcomeSpan);
         row.appendChild(outcomeTd);
 

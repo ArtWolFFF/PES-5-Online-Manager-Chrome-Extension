@@ -330,3 +330,11 @@ label {
 #reset-btn {
     width: 150px;
 }
+
+.match-report-link, .match-report-link:visited, .match-report-link:active, .match-report-link:hover {
+	color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    text-decoration: underline;
+	user-select: all;
+}
