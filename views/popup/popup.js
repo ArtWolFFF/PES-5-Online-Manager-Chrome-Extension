@@ -698,13 +698,13 @@ function setUpEventHandlers() {
 
     document.getElementById('change-club-btn').addEventListener("click", function (event) {
         toggleNoActiveClubState();
-        //globalData.setCurrentTeam(null);
-        //globalData.setCurrentLeague(null);
-        //globalData.setCurrentTeamId(null);
-        //globalData.setCurrentLogoUrl(null);
     });
 
     document.getElementById('reset-btn').addEventListener("click", function (event) {
+        globalData.setCurrentTeam(null);
+        globalData.setCurrentLeague(null);
+        globalData.setCurrentTeamId(null);
+        globalData.setCurrentTeamLogourl(null);
         location.reload();
     });
 }
