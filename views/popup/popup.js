@@ -346,12 +346,11 @@ function parseTeamCalendarPage(content) {
     ];
     let htmlDoc = parser.parseFromString(content, 'text/html');
     let rows = htmlDoc.querySelectorAll('.lmoInner tr');
-	let rowContentOffset = 4;
 	
     for (let row of rows) {
-        let isPlayed = row.children[rowContentOffset + 4].innerText != "_";
-        let homeTeam = row.children[rowContentOffset].innerText.trim();
-        let awayTeam = row.children[rowContentOffset + 2].innerText.trim();
+        let isPlayed = row.querySelectorAll('td[align=right]')[1].innerText != "_";
+        let homeTeam = row.querySelectorAll('td[align=right]')[0].innerText.trim();
+        let awayTeam = row.querySelectorAll('td[align=left]')[0].innerText.trim();
         let additionalInfoContainer = row.getElementsByClassName("popup");
         let popupHtml = additionalInfoContainer.length > 0 ? additionalInfoContainer[0].innerHTML : '';
         let isTechnicalDefeat = popupHtml.toLowerCase().includes('round table decision');
@@ -372,11 +371,11 @@ function parseTeamCalendarPage(content) {
         let fixture = {
             fixtureId: parseInt(row.children[0].innerText.trim()),
             homeTeam: homeTeam,
-            homeTeamLogoUrl: row.children[rowContentOffset].getElementsByTagName('img')[0].src,
+            homeTeamLogoUrl: row.getElementsByTagName('img')[0].src,
             awayTeam: awayTeam,
-            awayTeamLogoUrl: row.children[rowContentOffset + 2].getElementsByTagName('img')[0].src,
-            homeTeamGoals: isPlayed ? parseInt(row.children[rowContentOffset + 4].innerText) : 0,
-            awayTeamGoals: isPlayed ? parseInt(row.children[rowContentOffset + 6].innerText) : 0,
+            awayTeamLogoUrl: row.getElementsByTagName('img')[1].src,
+            homeTeamGoals: isPlayed ? parseInt(row.querySelectorAll('td[align=right]')[1].innerText) : 0,
+            awayTeamGoals: isPlayed ? parseInt(row.querySelectorAll('td[align=left]')[1].innerText) : 0,
             concluded: isPlayed || isTechnicalDefeat,
             isTechnicalDefeat: isTechnicalDefeat,
             technicalWinner: technicalWinner,
