@@ -351,23 +351,30 @@ function parseTeamCalendarPage(content) {
         let isPlayed = row.querySelectorAll('td[align=right]')[1].innerText != "_";
         let homeTeam = row.querySelectorAll('td[align=right]')[0].innerText.trim();
         let awayTeam = row.querySelectorAll('td[align=left]')[0].innerText.trim();
-        let additionalInfoContainer = row.getElementsByClassName("popup");
-        let popupHtml = additionalInfoContainer.length > 0 ? additionalInfoContainer[0].innerHTML : '';
-        let isTechnicalDefeat = popupHtml.toLowerCase().includes('round table decision');
+        let additionalInfoContainers = row.getElementsByClassName("popup");
+        let isTechnicalDefeat = false;
         let technicalWinner = null;
-        if (isTechnicalDefeat) {
-            if (countInstances(popupHtml, homeTeam) === 2) {
-                technicalWinner = homeTeam;  
-            } else if (countInstances(popupHtml, awayTeam) === 2) {
-                technicalWinner = awayTeam;
+        let matchReportLink = null;
+
+        for (let container of additionalInfoContainers) {
+            let popupHtml = container.innerHTML;
+
+            let isTechnicalDefeatPopup = popupHtml.toLowerCase().includes('round table decision');
+            if (isTechnicalDefeatPopup) {
+                isTechnicalDefeat = true;
+                if (countInstances(popupHtml, homeTeam) === 2) {
+                    technicalWinner = homeTeam;
+                } else if (countInstances(popupHtml, awayTeam) === 2) {
+                    technicalWinner = awayTeam;
+                }
             }
+
+            let isMatchReportPopup = popupHtml.toLowerCase().includes('match report');
+            if (isMatchReportPopup) {
+                matchReportLink = container.parentElement.href;
+            }            
         }
-		let hasMatchReport = popupHtml.toLowerCase().includes('match report');
-		let matchReportLink = null;
-		if (hasMatchReport) {
-			let sublinks = row.getElementsByTagName("a");
-			matchReportLink = sublinks[sublinks.length - 1].href;			
-		}
+
         let fixture = {
             fixtureId: parseInt(row.children[0].innerText.trim()),
             homeTeam: homeTeam,
@@ -565,7 +572,7 @@ function setUpManagersInfo() {
         .catch(function (error) {
             console.error(error);
             console.trace();
-            loadState.managerContactsUpdated = true; // not a primary feature, so we report loading as finished regardless of the outcome
+            loadState.managerContactsUpdated = true; // not a critical feature, so we report loading as finished regardless of the outcome
         });
 }
 
