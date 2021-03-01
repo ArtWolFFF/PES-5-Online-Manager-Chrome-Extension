@@ -546,12 +546,21 @@ function applyManagerPageData(content) {
                         let contactManagerLink = contactManagerLinks[0];
 						let mentionId = link.getAttribute("mention_id");
 						let href = link.getAttribute("href");
+						
                         let vkId = mentionId 
 							// a "VK mention" of the manager
 							? mentionId.replace("id", "")
 							// a plain old link to the manager's page
-							: href.replace("https://vk.com/id", "");
-                        contactManagerLink.href = "https://vk.com/write" + vkId;
+							: (href.indexOf("https://vk.com/id") > -1)
+								? href.replace("https://vk.com/id", "")
+								: null;
+						
+						contactManagerLink.href = vkId 
+							// found VK ID, can create link to direct messages
+							? "https://vk.com/write" + vkId
+							// manager home page
+							: href;
+							
                         contactManagerLink.classList.remove("disabled");
                     }
                 }
