@@ -1,6 +1,6 @@
 {
   "name": "Result Viewer For Pes 5 Online Project",
-  "version": "1.05",
+  "version": "1.06",
   "description": "Расширение позволяет видеть результаты соревнований участников сообщества 'PES 5 / WE 9 Online': https://vk.com/wel9_online",
   "manifest_version": 2,
   "permissions": [    
