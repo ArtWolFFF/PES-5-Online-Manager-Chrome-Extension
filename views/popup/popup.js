@@ -544,7 +544,13 @@ function applyManagerPageData(content) {
                     let contactManagerLinks = trow.getElementsByClassName('contact-manager-link');
                     if (contactManagerLinks.length > 0) {
                         let contactManagerLink = contactManagerLinks[0];
-                        let vkId = link.getAttribute("mention_id").replace("id", "");
+						let mentionId = link.getAttribute("mention_id");
+						let href = link.getAttribute("href");
+                        let vkId = mentionId 
+							// a "VK mention" of the manager
+							? mentionId.replace("id", "")
+							// a plain old link to the manager's page
+							: href.replace("https://vk.com/id", "");
                         contactManagerLink.href = "https://vk.com/write" + vkId;
                         contactManagerLink.classList.remove("disabled");
                     }
