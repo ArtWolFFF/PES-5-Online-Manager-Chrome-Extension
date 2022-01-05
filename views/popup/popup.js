@@ -28,12 +28,12 @@ let lmo = {
 };
 
 let league = {
-    SerieA: "seriea13.l98",
-    Ligue1: "ligue113.l98",
-    LaLiga: "laliga13.l98",
-    EuroLeague: "euro13.l98",
-    EPL: "epl13.l98",
-    Bundesliga: "bundes13.l98"
+    SerieA: "seriea14.l98",
+    Ligue1: "ligue114.l98",
+    LaLiga: "laliga14.l98",
+    EuroLeague: "euro14.l98",
+    EPL: "epl14.l98",
+    Bundesliga: "bundes14.l98"
 };
 
 let leagueNames = {
@@ -166,12 +166,12 @@ function countInstances(str, word) {
 
 /* LINKS */
 let matchTopicLinks = {};
-matchTopicLinks[league.SerieA] = "https://vk.com/topic-54185875_48186155";
-matchTopicLinks[league.Ligue1] = "https://vk.com/topic-54185875_48185701";
-matchTopicLinks[league.LaLiga] = "https://vk.com/topic-54185875_48184647";
-matchTopicLinks[league.EuroLeague] = "https://vk.com/topic-54185875_48183071";
-matchTopicLinks[league.EPL] = "https://vk.com/topic-54185875_48188673";
-matchTopicLinks[league.Bundesliga] = "https://vk.com/topic-54185875_48185786";
+matchTopicLinks[league.SerieA] = "https://vk.com/topic-54185875_48388934";
+matchTopicLinks[league.Ligue1] = "https://vk.com/topic-54185875_48389770";
+matchTopicLinks[league.LaLiga] = "https://vk.com/topic-54185875_48388940";
+matchTopicLinks[league.EuroLeague] = "https://vk.com/topic-54185875_48389496";
+matchTopicLinks[league.EPL] = "https://vk.com/topic-54185875_48390763";
+matchTopicLinks[league.Bundesliga] = "https://vk.com/topic-54185875_48389387";
 
 let coachListLinks = {};
 coachListLinks[league.SerieA] = "https://vk.com/topic-54185875_37150957?post=87359";
@@ -578,7 +578,7 @@ function setUpManagersInfo() {
     fetch(managerListUrl)
         .then(response => response.arrayBuffer())
         .then(buffer => {
-            // VK returnes pages encoded in windows-1251
+            // VK returns pages encoded in windows-1251
             let decoder = new TextDecoder("windows-1251");
             let text = decoder.decode(buffer);
             return Promise.resolve(text);
